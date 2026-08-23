@@ -1,0 +1,1632 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+    />
+    <title>SIPEDES · Sistem Informasi Potensi Desa Sleman</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png" />
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/print.css" />
+
+    <style>
+      /* ============================================================
+       TAMBAHAN CSS KHUSUS INDEX
+       ============================================================ */
+
+      /* ===== MOBILE OVERLAY ===== */
+      .mobile-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 998;
+        display: none;
+      }
+      .mobile-overlay.active {
+        display: block;
+      }
+
+      /* ===== NAV TOGGLE ===== */
+      .nav-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        z-index: 1001;
+      }
+      .nav-toggle span {
+        width: 26px;
+        height: 2.5px;
+        background: var(--text);
+        border-radius: 2px;
+        transition: var(--transition);
+        display: block;
+      }
+      .nav-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+      }
+
+      /* ===== NAV MENU MOBILE ===== */
+      .nav-menu-mobile {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(12px);
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
+        z-index: 999;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      }
+      .nav-menu-mobile.open {
+        display: flex;
+      }
+      .nav-menu-mobile a {
+        padding: 12px 16px;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-light);
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .nav-menu-mobile a:last-child {
+        border-bottom: none;
+      }
+      .nav-menu-mobile a.active {
+        color: var(--primary);
+        background: var(--primary-50);
+      }
+      .nav-menu-mobile a i {
+        width: 24px;
+        text-align: center;
+        font-size: 18px;
+      }
+      .nav-menu-mobile a .nav-login-mobile {
+        background: var(--accent);
+        color: #fff !important;
+        padding: 6px 16px;
+        border-radius: 30px;
+      }
+      .nav-menu-mobile a .nav-dashboard-mobile {
+        background: var(--primary-50);
+        color: var(--primary) !important;
+        padding: 6px 16px;
+        border-radius: 30px;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .nav-menu {
+          display: none !important;
+        }
+        .nav-toggle {
+          display: flex !important;
+        }
+        .brand small {
+          display: none !important;
+        }
+        .brand {
+          font-size: 16px !important;
+        }
+        .brand img {
+          height: 32px !important;
+          width: 32px !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .nav-menu-mobile {
+          padding: 12px 16px;
+        }
+        .nav-menu-mobile a {
+          padding: 10px 14px;
+          font-size: 14px;
+        }
+        .nav-menu-mobile a i {
+          font-size: 16px;
+          width: 20px;
+        }
+        .nav-toggle span {
+          width: 22px;
+          height: 2px;
+        }
+      }
+      @media (min-width: 769px) {
+        .nav-toggle {
+          display: none !important;
+        }
+        .nav-menu {
+          display: flex !important;
+        }
+        .nav-menu-mobile {
+          display: none !important;
+        }
+        .mobile-overlay {
+          display: none !important;
+        }
+      }
+
+      /* ============================================================
+       SWOT STYLE
+       ============================================================ */
+      .swot-container {
+        background: var(--bg);
+        padding: 24px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+      }
+      .swot-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .swot-form-col {
+        background: #fff;
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        border: 2px solid var(--border);
+        transition: var(--transition);
+      }
+      .swot-form-col:hover {
+        box-shadow: var(--shadow-hover);
+      }
+      .swot-form-col h4 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .swot-form-col h4 i {
+        font-size: 16px;
+      }
+      .swot-faktor-list {
+        max-height: 280px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .swot-faktor-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .swot-faktor-list::-webkit-scrollbar-thumb {
+        background: #c0c0c0;
+        border-radius: 4px;
+      }
+      .swot-faktor-item {
+        display: grid;
+        grid-template-columns: 28px 1fr 60px 50px 35px 24px;
+        gap: 6px;
+        align-items: center;
+        background: #ffffff;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        border: 1px solid var(--border);
+        font-size: 12px;
+        transition: var(--transition);
+      }
+      .swot-faktor-item:hover {
+        box-shadow: var(--shadow);
+      }
+      .swot-faktor-item .faktor-id {
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .swot-faktor-item input,
+      .swot-faktor-item select {
+        padding: 4px 6px;
+        border: 1.5px solid var(--border);
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: var(--font);
+        background: #fff;
+        width: 100%;
+        transition: var(--transition);
+      }
+      .swot-faktor-item input:focus,
+      .swot-faktor-item select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(15, 76, 58, 0.1);
+      }
+      .swot-faktor-item .faktor-bobot {
+        width: 55px;
+        text-align: center;
+      }
+      .swot-faktor-item .faktor-rating {
+        width: 45px;
+        text-align: center;
+      }
+      .faktor-skor {
+        font-weight: 700;
+        font-size: 13px;
+        text-align: center;
+      }
+      .btn-remove {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px;
+        opacity: 0.4;
+        transition: var(--transition);
+      }
+      .btn-remove:hover {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      .empty-state {
+        padding: 16px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+        background: #fff;
+        border-radius: 6px;
+        border: 1.5px dashed var(--border);
+      }
+      .btn-sm {
+        padding: 5px 14px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+      .btn-add {
+        background: var(--primary);
+        color: #fff;
+        margin-top: 8px;
+      }
+      .btn-add:hover {
+        background: var(--primary-light);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 76, 58, 0.3);
+      }
+      .swot-form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding-top: 16px;
+        border-top: 2px solid var(--border);
+      }
+      .swot-form-actions .btn {
+        padding: 10px 24px;
+        font-size: 13px;
+        border-radius: 30px;
+      }
+
+      /* ===== HASIL SWOT ===== */
+      .swot-hasil {
+        background: #fff;
+        padding: 24px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+      .swot-hasil h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .hasil-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .hasil-item {
+        background: var(--bg);
+        padding: 12px 16px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        transition: var(--transition);
+        text-align: center;
+        min-height: 56px;
+      }
+      .hasil-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      .hasil-item.highlight {
+        background: #f0f7f5;
+        border-color: var(--primary);
+        border-width: 2px;
+      }
+      .hasil-label {
+        font-weight: 500;
+        color: var(--text-light);
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .hasil-label i {
+        font-size: 13px;
+      }
+      .hasil-value {
+        font-weight: 700;
+        font-size: 18px;
+        margin-top: 2px;
+      }
+      .hasil-kuadran-info {
+        text-align: center;
+        padding: 16px 20px;
+        background: var(--bg);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+      }
+      .kuadran-badge {
+        display: inline-block;
+        padding: 6px 24px;
+        border-radius: 20px;
+        font-weight: 700;
+        color: #fff;
+        font-size: 14px;
+      }
+      .strategi-badge {
+        display: inline-block;
+        padding: 6px 24px;
+        border-radius: 20px;
+        font-weight: 600;
+        color: #fff;
+        font-size: 14px;
+        margin-left: 4px;
+      }
+      .strategi-deskripsi {
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      /* ===== KUADRAN ===== */
+      .swot-kuadran {
+        background: #fff;
+        padding: 24px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+      .swot-kuadran h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .kuadran-chart {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        aspect-ratio: 1;
+      }
+      .kuadran-axis-x {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 16px;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
+      .kuadran-axis-y {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        left: -56px;
+        top: 0;
+        bottom: 0;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .kuadran-grid {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 2px;
+        background: var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .kuadran-area {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 11px;
+        background: #fff;
+        color: var(--text-muted);
+        padding: 8px;
+        text-align: center;
+        transition: var(--transition);
+      }
+      .kuadran-area.active {
+        border: 3px solid;
+      }
+      .kuadran-area .check {
+        font-size: 20px;
+        display: block;
+        margin-top: 2px;
+      }
+      .kuadran-area div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+      }
+      .kuadran-label {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .kuadran-strategy {
+        font-size: 10px;
+      }
+      .kuadran-dot {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        border: 3px solid #fff;
+        box-shadow:
+          0 0 0 3px rgba(0, 0, 0, 0.15),
+          0 4px 16px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        transition: all 0.5s ease;
+      }
+      .dot-label {
+        position: absolute;
+        top: 26px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+        background: #fff;
+        padding: 2px 10px;
+        border-radius: 4px;
+        box-shadow: var(--shadow);
+      }
+      .kuadran-note {
+        text-align: center;
+        margin-top: 12px;
+        padding: 12px 16px;
+        background: var(--bg);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--text-light);
+      }
+
+      /* ===== MATRIKS ===== */
+      .matrix-wrapper {
+        background: #fff;
+        padding: 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+      .matrix-wrapper h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .matrix-grid {
+        display: grid;
+        grid-template-columns: 100px 1fr 1fr;
+        gap: 2px;
+        background: var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .matrix-header {
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 12px;
+        text-align: center;
+        background: #fff;
+      }
+      .matrix-s {
+        color: #2e7d32;
+      }
+      .matrix-w {
+        color: #c62828;
+      }
+      .matrix-o {
+        color: #0d47a1;
+      }
+      .matrix-t {
+        color: #e65100;
+      }
+      .matrix-cell {
+        padding: 12px 14px;
+        background: #fff;
+        font-size: 12px;
+      }
+      .matrix-cell strong {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+      .matrix-cell ul li {
+        padding: 2px 0;
+        color: var(--text-light);
+        font-size: 11px;
+        padding-left: 16px;
+        position: relative;
+        line-height: 1.4;
+      }
+      .matrix-cell ul li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        font-weight: 700;
+      }
+      .matrix-so {
+        border-left: 4px solid #2e7d32;
+      }
+      .matrix-wo {
+        border-left: 4px solid #0d47a1;
+      }
+      .matrix-st {
+        border-left: 4px solid #e65100;
+      }
+      .matrix-wt {
+        border-left: 4px solid #c62828;
+      }
+
+      /* ===== RESPONSIVE SWOT ===== */
+      @media (max-width: 768px) {
+        .swot-form-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .swot-faktor-item {
+          grid-template-columns: 20px 1fr 45px 40px 25px 20px !important;
+          font-size: 10px !important;
+          padding: 4px 6px !important;
+        }
+        .swot-faktor-item .faktor-bobot {
+          width: 40px !important;
+        }
+        .swot-faktor-item .faktor-rating {
+          width: 35px !important;
+        }
+        .hasil-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+        .matrix-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .matrix-header {
+          display: none !important;
+        }
+        .kuadran-axis-y {
+          display: none !important;
+        }
+        .kuadran-chart {
+          max-width: 280px !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .swot-faktor-item {
+          grid-template-columns: 16px 1fr 35px 30px 20px 16px !important;
+          font-size: 9px !important;
+          padding: 3px 4px !important;
+        }
+        .swot-faktor-item input,
+        .swot-faktor-item select {
+          font-size: 8px !important;
+          padding: 2px 3px !important;
+        }
+        .swot-faktor-item .faktor-bobot {
+          width: 32px !important;
+        }
+        .swot-faktor-item .faktor-rating {
+          width: 28px !important;
+        }
+        .hasil-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .hasil-item {
+          min-height: 44px !important;
+        }
+        .hasil-value {
+          font-size: 15px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== PRELOADER ===== -->
+    <div id="preloader">
+      <div class="loader-ring"></div>
+      <span class="loader-text">SIPEDES</span>
+      <span class="loader-sub">Memuat data...</span>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toastContainer"></div>
+
+    <!-- ===== CONFIRM MODAL ===== -->
+    <div class="confirm-overlay" id="confirmModal">
+      <div class="confirm-box">
+        <div class="confirm-icon" id="confirmIcon">⚠️</div>
+        <h3 id="confirmTitle">Konfirmasi</h3>
+        <p id="confirmMessage">Yakin ingin melanjutkan?</p>
+        <div class="confirm-actions">
+          <button class="btn-confirm-no" id="confirmNo">Batal</button>
+          <button class="btn-confirm-yes" id="confirmYes">Ya, Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MOBILE OVERLAY ===== -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header" id="header">
+      <div class="container">
+        <nav class="navbar">
+          <a href="index.html" class="brand">
+            <img
+              src="assets/images/logo.png"
+              alt="SIPEDES"
+              onerror="this.style.display = 'none'"
+            />
+            <span>SIPEDES</span>
+            <small>Desa Sleman</small>
+          </a>
+
+          <!-- Desktop Menu -->
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="#beranda" class="nav-link active">Beranda</a></li>
+            <li><a href="#profil" class="nav-link">Profil</a></li>
+            <li><a href="#potensi" class="nav-link">Potensi</a></li>
+            <li><a href="#swot" class="nav-link">SWOT</a></li>
+            <li><a href="#strategi" class="nav-link">Strategi</a></li>
+            <li><a href="#program" class="nav-link">Program</a></li>
+            <li>
+              <a href="dashboard-admin.html" class="nav-dashboard"
+                ><i class="fas fa-gauge-high"></i
+              ></a>
+            </li>
+            <li>
+              <a href="login.html" class="nav-login"
+                ><i class="fas fa-user"></i
+              ></a>
+            </li>
+          </ul>
+
+          <!-- Mobile Toggle Button -->
+          <button class="nav-toggle" id="navToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div class="nav-menu-mobile" id="navMenuMobile">
+          <a href="#beranda" class="active"
+            ><i class="fas fa-home"></i> Beranda</a
+          >
+          <a href="#profil"><i class="fas fa-info-circle"></i> Profil Desa</a>
+          <a href="#potensi"><i class="fas fa-bolt"></i> Potensi</a>
+          <a href="#swot"><i class="fas fa-chart-pie"></i> Analisis SWOT</a>
+          <a href="#strategi"><i class="fas fa-bullseye"></i> Strategi</a>
+          <a href="#program"><i class="fas fa-tasks"></i> Program</a>
+          <a href="dashboard-admin.html"
+            ><i class="fas fa-gauge-high"></i>
+            <span class="nav-dashboard-mobile">Dashboard</span></a
+          >
+          <a href="login.html"
+            ><i class="fas fa-user"></i>
+            <span class="nav-login-mobile">Login</span></a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section id="beranda" class="hero">
+      <div class="hero-bg"></div>
+      <div class="container hero-container">
+        <div class="hero-content" data-aos="fade-up">
+          <div class="hero-badge">
+            <img
+              src="assets/images/logo.png"
+              alt="SIPEDES"
+              onerror="this.style.display = 'none'"
+            />
+            Sistem Informasi Potensi Desa
+          </div>
+          <h1>Perencanaan Pengembangan <span>Ekonomi Desa Sleman</span></h1>
+          <p>
+            SIPEDES adalah sistem informasi perencanaan strategis berbasis
+            analisis SWOT untuk mengidentifikasi potensi, merumuskan strategi,
+            dan menyusun rencana aksi pengembangan ekonomi desa secara
+            terstruktur dan berkelanjutan.
+          </p>
+          <div class="hero-actions">
+            <a href="#swot" class="btn btn-primary"
+              ><i class="fas fa-chart-pie"></i> Analisis SWOT</a
+            >
+            <a href="#profil" class="btn btn-outline"
+              ><i class="fas fa-chevron-down"></i> Jelajahi</a
+            >
+          </div>
+        </div>
+        <div class="hero-stats" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-item">
+            <span class="stat-number" data-count="4975">0</span>
+            <label>Penduduk</label>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-count="505">0</span>
+            <label>Ha Lahan</label>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-count="1969">0</span>
+            <label>Kepala Keluarga</label>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-count="49">0</span>
+            <label>Unit Usaha</label>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll">
+        <a href="#profil" class="scroll-down">
+          <span>Scroll</span>
+          <i class="fas fa-chevron-down"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== PROFIL ===== -->
+    <section id="profil" class="section profil">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-info-circle"></i> Gambaran Umum</span
+          >
+          <h2>Profil Desa Sleman</h2>
+          <div class="section-line"></div>
+          <p>
+            Desa Sleman terletak di Kecamatan Sliyeg, Kabupaten Indramayu,
+            dengan luas wilayah 547,35 hektare dan didominasi oleh lahan
+            pertanian sawah.
+          </p>
+        </div>
+        <div id="profilContent" class="profil-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== POTENSI ===== -->
+    <section id="potensi" class="section potensi">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-bolt"></i> Sumber Daya</span
+          >
+          <h2>Potensi Ekonomi</h2>
+          <div class="section-line"></div>
+          <p>
+            Desa Sleman memiliki beragam potensi ekonomi yang dapat dikembangkan
+            untuk meningkatkan kesejahteraan masyarakat.
+          </p>
+        </div>
+        <div id="potensiContent" class="potensi-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== SWOT ===== -->
+    <section id="swot" class="section swot">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-chart-pie"></i> Analisis Strategis</span
+          >
+          <h2>Analisis SWOT</h2>
+          <div class="section-line"></div>
+          <p>
+            Identifikasi faktor internal dan eksternal untuk pengembangan
+            ekonomi desa.
+          </p>
+        </div>
+        <div id="swotContainer" class="swot-container"></div>
+        <div id="swotHasil" class="swot-hasil" style="display: none">
+          <h3>Hasil Analisis SWOT</h3>
+          <div id="swotHasilContent"></div>
+        </div>
+        <div id="swotKuadran" class="swot-kuadran" style="display: none">
+          <h3>Posisi Kuadran SWOT</h3>
+          <div id="swotKuadranContent"></div>
+        </div>
+        <div id="matrixWrapper" class="matrix-wrapper" style="display: none">
+          <h3>Matriks SWOT</h3>
+          <div id="matrixContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STRATEGI ===== -->
+    <section id="strategi" class="section strategi">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-bullseye"></i> Rekomendasi</span
+          >
+          <h2>Strategi Pengembangan</h2>
+          <div class="section-line"></div>
+          <p>Strategi prioritas untuk pengembangan ekonomi Desa Sleman.</p>
+        </div>
+        <div id="strategiContent" class="strategi-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== PROGRAM ===== -->
+    <section id="program" class="section program">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-tasks"></i> Implementasi</span
+          >
+          <h2>Program Pengembangan</h2>
+          <div class="section-line"></div>
+          <p>Program strategis untuk pengembangan ekonomi desa.</p>
+        </div>
+        <div id="programContent" class="program-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== TENTANG ===== -->
+    <section id="tentang" class="section tentang">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <span class="section-tag"
+            ><i class="fas fa-info-circle"></i> Tentang</span
+          >
+          <h2>Tentang SIPEDES</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="tentang-grid">
+          <div class="tentang-card" data-aos="fade-up">
+            <div class="tentang-icon"><i class="fas fa-bullseye"></i></div>
+            <h3>Visi</h3>
+            <p>
+              Menjadi sistem perencanaan strategis yang membantu desa
+              mengembangkan potensi ekonomi secara berkelanjutan.
+            </p>
+          </div>
+          <div class="tentang-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="tentang-icon"><i class="fas fa-flag"></i></div>
+            <h3>Misi</h3>
+            <ul>
+              <li>Menyediakan data potensi desa terstruktur</li>
+              <li>Memfasilitasi analisis SWOT interaktif</li>
+              <li>Menghasilkan rekomendasi strategi tepat sasaran</li>
+            </ul>
+          </div>
+          <div class="tentang-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="tentang-icon">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <h3>Manfaat</h3>
+            <ul>
+              <li>Memudahkan identifikasi potensi desa</li>
+              <li>Membantu perumusan strategi</li>
+              <li>Menyediakan data untuk pengambilan keputusan</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <h3>
+              <img
+                src="assets/images/logo.png"
+                alt="SIPEDES"
+                onerror="this.style.display = 'none'"
+              />
+              SIPEDES
+            </h3>
+            <p>Sistem Informasi Potensi Desa</p>
+            <p class="footer-tagline">
+              <i class="fas fa-quote-left"></i> Membangun desa dari potensi
+              lokal
+            </p>
+          </div>
+          <div class="footer-links">
+            <h4>Navigasi</h4>
+            <ul>
+              <li>
+                <a href="#beranda"
+                  ><i class="fas fa-chevron-right"></i> Beranda</a
+                >
+              </li>
+              <li>
+                <a href="#profil"
+                  ><i class="fas fa-chevron-right"></i> Profil</a
+                >
+              </li>
+              <li>
+                <a href="#potensi"
+                  ><i class="fas fa-chevron-right"></i> Potensi</a
+                >
+              </li>
+              <li>
+                <a href="#swot"><i class="fas fa-chevron-right"></i> SWOT</a>
+              </li>
+              <li>
+                <a href="#strategi"
+                  ><i class="fas fa-chevron-right"></i> Strategi</a
+                >
+              </li>
+              <li>
+                <a href="#program"
+                  ><i class="fas fa-chevron-right"></i> Program</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="footer-info">
+            <h4>Desa Sleman</h4>
+            <p><i class="fas fa-map-pin"></i> Kec. Sliyeg, Kab. Indramayu</p>
+            <p><i class="fas fa-envelope"></i> desasleman@indramayu.go.id</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 SIPEDES · Sistem Informasi Potensi Desa</p>
+          <p class="footer-credit">Dibangun untuk kemajuan desa</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/crud.js"></script>
+    <script src="js/swot.js"></script>
+
+    <script>
+      // ============================================================
+      // CONFIRM MODAL
+      // ============================================================
+      var confirmCallback = null;
+
+      function showConfirm(message, callback, icon, title) {
+        icon = icon || "warning";
+        title = title || "Konfirmasi";
+        var overlay = document.getElementById("confirmModal");
+        var iconEl = document.getElementById("confirmIcon");
+        var titleEl = document.getElementById("confirmTitle");
+        var msgEl = document.getElementById("confirmMessage");
+        var yesBtn = document.getElementById("confirmYes");
+        var noBtn = document.getElementById("confirmNo");
+
+        var iconMap = {
+          warning: "⚠️",
+          danger: "🔴",
+          success: "✅",
+          info: "ℹ️",
+        };
+        iconEl.textContent = iconMap[icon] || "⚠️";
+        iconEl.className = "confirm-icon " + icon;
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+        confirmCallback = callback;
+
+        yesBtn.onclick = function () {
+          overlay.classList.remove("active");
+          document.body.style.overflow = "auto";
+          if (confirmCallback) confirmCallback(true);
+          confirmCallback = null;
+        };
+        noBtn.onclick = function () {
+          overlay.classList.remove("active");
+          document.body.style.overflow = "auto";
+          if (confirmCallback) confirmCallback(false);
+          confirmCallback = null;
+        };
+        overlay.onclick = function (e) {
+          if (e.target === overlay) {
+            overlay.classList.remove("active");
+            document.body.style.overflow = "auto";
+            if (confirmCallback) confirmCallback(false);
+            confirmCallback = null;
+          }
+        };
+      }
+
+      // ============================================================
+      // TOAST
+      // ============================================================
+      function showToast(message, type, duration) {
+        type = type || "info";
+        duration = duration || 3000;
+        var container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        var colors = {
+          success: {
+            bg: "linear-gradient(135deg, #1b5e20, #2e7d32)",
+            icon: "fa-check-circle",
+          },
+          error: {
+            bg: "linear-gradient(135deg, #b71c1c, #c62828)",
+            icon: "fa-exclamation-circle",
+          },
+          warning: {
+            bg: "linear-gradient(135deg, #bf360c, #e65100)",
+            icon: "fa-triangle-exclamation",
+          },
+          info: {
+            bg: "linear-gradient(135deg, #0a3a7a, #0d47a1)",
+            icon: "fa-info-circle",
+          },
+        };
+
+        var color = colors[type] || colors.info;
+        var notif = document.createElement("div");
+        notif.className = "toast " + type;
+        notif.style.background = color.bg;
+        notif.innerHTML =
+          '<i class="fas ' +
+          color.icon +
+          '"></i><span class="toast-content">' +
+          message +
+          '</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+        container.appendChild(notif);
+
+        setTimeout(function () {
+          notif.classList.add("hide");
+          setTimeout(function () {
+            notif.remove();
+          }, 400);
+        }, duration);
+      }
+
+      // ============================================================
+      // MOBILE MENU TOGGLE - LENGKAP
+      // ============================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        var toggle = document.getElementById("navToggle");
+        var mobileMenu = document.getElementById("navMenuMobile");
+        var overlay = document.getElementById("mobileOverlay");
+
+        if (toggle && mobileMenu) {
+          // Buka/tutup menu saat tombol diklik
+          toggle.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle("active");
+            mobileMenu.classList.toggle("open");
+            if (overlay) overlay.classList.toggle("active");
+            document.body.style.overflow = mobileMenu.classList.contains("open")
+              ? "hidden"
+              : "auto";
+          });
+
+          // Tutup menu saat link diklik
+          mobileMenu.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", function () {
+              toggle.classList.remove("active");
+              mobileMenu.classList.remove("open");
+              if (overlay) overlay.classList.remove("active");
+              document.body.style.overflow = "auto";
+            });
+          });
+
+          // Tutup menu saat overlay diklik
+          if (overlay) {
+            overlay.addEventListener("click", function () {
+              toggle.classList.remove("active");
+              mobileMenu.classList.remove("open");
+              overlay.classList.remove("active");
+              document.body.style.overflow = "auto";
+            });
+          }
+
+          // Tutup menu saat resize ke desktop
+          window.addEventListener("resize", function () {
+            if (
+              window.innerWidth > 768 &&
+              mobileMenu.classList.contains("open")
+            ) {
+              toggle.classList.remove("active");
+              mobileMenu.classList.remove("open");
+              if (overlay) overlay.classList.remove("active");
+              document.body.style.overflow = "auto";
+            }
+          });
+        }
+      });
+
+      // ============================================================
+      // RENDER FUNCTIONS
+      // ============================================================
+      function renderProfil(data) {
+        var container = document.getElementById("profilContent");
+        if (!data || !data.identitas) {
+          container.innerHTML =
+            '<p style="text-align:center;color:var(--text-muted);padding:20px;">Data desa tidak ditemukan.</p>';
+          return;
+        }
+
+        container.innerHTML =
+          "" +
+          '<div class="profil-card"><div class="profil-icon"><i class="fas fa-map"></i></div><h3>Wilayah</h3><ul>' +
+          "<li><strong>Luas:</strong> " +
+          data.identitas.luas_wilayah +
+          " Ha</li>" +
+          "<li><strong>Sawah:</strong> " +
+          data.identitas.luas_sawah +
+          " Ha</li>" +
+          "<li><strong>Dusun:</strong> " +
+          data.identitas.jumlah_dusun +
+          "</li>" +
+          "<li><strong>Aparat:</strong> " +
+          data.identitas.jumlah_aparat +
+          " orang</li>" +
+          "<li><strong>Kades:</strong> " +
+          data.identitas.kepala_desa +
+          "</li>" +
+          "</ul></div>" +
+          '<div class="profil-card"><div class="profil-icon"><i class="fas fa-users"></i></div><h3>Demografi</h3><ul>' +
+          "<li><strong>Penduduk:</strong> " +
+          data.demografi.total_penduduk.toLocaleString() +
+          "</li>" +
+          "<li><strong>Laki:</strong> " +
+          data.demografi.laki_laki.toLocaleString() +
+          "</li>" +
+          "<li><strong>Perempuan:</strong> " +
+          data.demografi.perempuan.toLocaleString() +
+          "</li>" +
+          "<li><strong>KK:</strong> " +
+          data.demografi.jumlah_kk.toLocaleString() +
+          "</li>" +
+          "<li><strong>Kepadatan:</strong> " +
+          data.demografi.kepadatan +
+          " jiwa/km²</li>" +
+          "</ul></div>" +
+          '<div class="profil-card"><div class="profil-icon"><i class="fas fa-graduation-cap"></i></div><h3>Pendidikan</h3><ul>' +
+          "<li><strong>SD:</strong> " +
+          data.pendidikan.sd.total.toLocaleString() +
+          "</li>" +
+          "<li><strong>SLTP:</strong> " +
+          data.pendidikan.sltp.total.toLocaleString() +
+          "</li>" +
+          "<li><strong>SLTA:</strong> " +
+          data.pendidikan.slta.total.toLocaleString() +
+          "</li>" +
+          "<li><strong>PT:</strong> " +
+          data.pendidikan.pt.total.toLocaleString() +
+          "</li>" +
+          "<li><strong>Pengangguran:</strong> " +
+          data.pendidikan.penduduk_menganggur.total.toLocaleString() +
+          "</li>" +
+          "</ul></div>" +
+          '<div class="profil-card"><div class="profil-icon"><i class="fas fa-school"></i></div><h3>Fasilitas</h3><ul>' +
+          "<li><strong>TK:</strong> " +
+          data.sekolah.tk.unit +
+          " unit (" +
+          data.sekolah.tk.siswa +
+          " siswa)</li>" +
+          "<li><strong>SD:</strong> " +
+          data.sekolah.sd.unit +
+          " unit (" +
+          data.sekolah.sd.siswa +
+          " siswa)</li>" +
+          "<li><strong>RA:</strong> " +
+          data.sekolah.ra.unit +
+          " unit (" +
+          data.sekolah.ra.siswa +
+          " siswa)</li>" +
+          "<li><strong>Curah Hujan:</strong> " +
+          data.iklim.curah_hujan +
+          " mm</li>" +
+          "<li><strong>Suhu:</strong> " +
+          data.iklim.suhu_rata_rata +
+          "°C</li>" +
+          "</ul></div>";
+      }
+
+      function renderPotensi(data) {
+        var container = document.getElementById("potensiContent");
+        if (!data || !data.sektor) {
+          container.innerHTML =
+            '<p style="text-align:center;color:var(--text-muted);padding:20px;">Data potensi tidak ditemukan.</p>';
+          return;
+        }
+
+        var html = "";
+        for (var i = 0; i < data.sektor.length && i < 8; i++) {
+          var s = data.sektor[i];
+          var detailHtml = "";
+          for (var j = 0; j < (s.detail || []).length && j < 3; j++) {
+            detailHtml +=
+              '<li><i class="fas fa-check-circle"></i> ' +
+              s.detail[j] +
+              "</li>";
+          }
+          html +=
+            "" +
+            '<div class="potensi-card" data-aos="fade-up" data-aos-delay="' +
+            i * 50 +
+            '">' +
+            '<div class="potensi-icon" style="background:' +
+            (s.warna || "#e8f5e9") +
+            ";color:" +
+            (s.teks_warna || "#2e7d32") +
+            ';">' +
+            '<i class="fas ' +
+            (s.icon || "fa-seedling") +
+            '"></i></div>' +
+            "<h3>" +
+            s.nama +
+            "</h3>" +
+            "<p>" +
+            s.deskripsi +
+            "</p>" +
+            "<ul>" +
+            detailHtml +
+            "</ul>" +
+            "</div>";
+        }
+        container.innerHTML = html;
+      }
+
+      function renderStrategi(data) {
+        var container = document.getElementById("strategiContent");
+        if (!data || !data.strategi) {
+          container.innerHTML =
+            '<p style="text-align:center;color:var(--text-muted);padding:20px;">Data strategi tidak ditemukan.</p>';
+          return;
+        }
+
+        var tipeColor = {
+          SO: "#2e7d32",
+          WO: "#0d47a1",
+          ST: "#e65100",
+          WT: "#c62828",
+        };
+        var tipeLabel = {
+          SO: "Agresif",
+          WO: "Turnaround",
+          ST: "Diversifikasi",
+          WT: "Defensif",
+        };
+
+        var html = "";
+        for (var i = 0; i < data.strategi.length && i < 6; i++) {
+          var s = data.strategi[i];
+          var indikatorHtml = "";
+          for (var j = 0; j < (s.indikator || []).length && j < 2; j++) {
+            indikatorHtml += "<li>" + s.indikator[j] + "</li>";
+          }
+          html +=
+            "" +
+            '<div class="strategi-card" data-aos="fade-up" data-aos-delay="' +
+            i * 80 +
+            '">' +
+            '<div class="strategi-number">' +
+            String(i + 1).padStart(2, "0") +
+            "</div>" +
+            '<div class="strategi-content">' +
+            "<h3>" +
+            s.nama +
+            "</h3>" +
+            '<span class="strategi-type" style="background:' +
+            (tipeColor[s.tipe] || "#2e7d32") +
+            "20;color:" +
+            (tipeColor[s.tipe] || "#2e7d32") +
+            ';">' +
+            (tipeLabel[s.tipe] || s.tipe) +
+            "</span>" +
+            "<p>" +
+            s.deskripsi +
+            "</p>" +
+            '<div class="strategi-detail">' +
+            '<span><i class="fas fa-coins"></i> ' +
+            (s.sumber_dana || []).join(", ") +
+            "</span>" +
+            '<span><i class="fas fa-clock"></i> ' +
+            (s.timeline || "2025-2030") +
+            "</span>" +
+            "</div>" +
+            '<div class="strategi-indikator">' +
+            "<small>Indikator:</small><ul>" +
+            indikatorHtml +
+            "</ul>" +
+            "</div>" +
+            "</div></div>";
+        }
+        container.innerHTML = html;
+      }
+
+      function renderProgram(data) {
+        var container = document.getElementById("programContent");
+        if (!data || !data.program) {
+          container.innerHTML =
+            '<p style="text-align:center;color:var(--text-muted);padding:20px;">Data program tidak ditemukan.</p>';
+          return;
+        }
+
+        var statusColor = {
+          Berjalan: "#2e7d32",
+          Perencanaan: "#e65100",
+          Selesai: "#0d47a1",
+        };
+
+        var html = "";
+        for (var i = 0; i < data.program.length && i < 5; i++) {
+          var p = data.program[i];
+          html +=
+            "" +
+            '<div class="program-card" data-aos="fade-up" data-aos-delay="' +
+            i * 80 +
+            '">' +
+            '<div class="program-number">' +
+            String(i + 1).padStart(2, "0") +
+            "</div>" +
+            '<div class="program-content">' +
+            "<h4>" +
+            p.nama +
+            "</h4>" +
+            "<p>" +
+            p.deskripsi +
+            "</p>" +
+            '<div class="program-meta">' +
+            '<span><i class="fas fa-coins"></i> ' +
+            p.sumber_dana +
+            "</span>" +
+            '<span><i class="fas fa-calendar"></i> ' +
+            (p.tahun_mulai || "-") +
+            "</span>" +
+            '<span class="program-status" style="background:' +
+            (statusColor[p.status] || "#e65100") +
+            "20;color:" +
+            (statusColor[p.status] || "#e65100") +
+            ';">' +
+            (p.status || "Perencanaan") +
+            "</span>" +
+            "</div>" +
+            '<div class="program-indikator"><small>Target:</small> <span>' +
+            (p.indikator || "-") +
+            "</span></div>" +
+            "</div></div>";
+        }
+        container.innerHTML = html;
+      }
+
+      // ============================================================
+      // LOAD DATA - LANGSUNG DARI HARDCODED
+      // ============================================================
+      function loadAllData() {
+        // Profil - langsung dari CRUD.data
+        var profilData = CRUD.data.desa;
+        if (profilData) {
+          renderProfil(profilData);
+          console.log("✅ Profil desa dimuat dari hardcoded");
+        }
+
+        // Potensi
+        var potensiData = CRUD.data.potensi;
+        if (potensiData) {
+          renderPotensi(potensiData);
+          console.log("✅ Data potensi dimuat dari hardcoded");
+        }
+
+        // Strategi
+        var strategiData = CRUD.data.strategi;
+        if (strategiData) {
+          renderStrategi(strategiData);
+          console.log("✅ Data strategi dimuat dari hardcoded");
+        }
+
+        // Program
+        var programData = CRUD.data.program;
+        if (programData) {
+          renderProgram(programData);
+          console.log("✅ Data program dimuat dari hardcoded");
+        }
+      }
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        // AOS
+        AOS.init({
+          duration: 600,
+          once: true,
+          offset: 30,
+          easing: "ease-out-cubic",
+        });
+
+        // Preloader
+        setTimeout(function () {
+          var preloader = document.getElementById("preloader");
+          if (preloader) preloader.classList.add("hide");
+        }, 800);
+
+        // Navbar Scroll
+        var header = document.getElementById("header");
+        window.addEventListener("scroll", function () {
+          if (window.pageYOffset > 50) {
+            header.classList.add("scrolled");
+          } else {
+            header.classList.remove("scrolled");
+          }
+        });
+
+        // Nav Link Active
+        var sections = document.querySelectorAll("section[id]");
+        var navLinks = document.querySelectorAll(".nav-link");
+
+        window.addEventListener("scroll", function () {
+          var current = "";
+          sections.forEach(function (section) {
+            var top = section.offsetTop - 120;
+            if (window.pageYOffset >= top) {
+              current = section.getAttribute("id");
+            }
+          });
+          navLinks.forEach(function (link) {
+            link.classList.remove("active");
+            if (link.getAttribute("href") === "#" + current) {
+              link.classList.add("active");
+            }
+          });
+        });
+
+        // Scroll Top
+        var scrollBtn = document.createElement("button");
+        scrollBtn.className = "scroll-top";
+        scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        scrollBtn.setAttribute("aria-label", "Scroll to top");
+        document.body.appendChild(scrollBtn);
+
+        window.addEventListener("scroll", function () {
+          if (window.pageYOffset > 500) {
+            scrollBtn.classList.add("visible");
+          } else {
+            scrollBtn.classList.remove("visible");
+          }
+        });
+        scrollBtn.addEventListener("click", function () {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // Animated Counter
+        function animateCounters() {
+          document
+            .querySelectorAll(".stat-number[data-count]")
+            .forEach(function (counter) {
+              var target = parseInt(counter.getAttribute("data-count"));
+              var observer = new IntersectionObserver(
+                function (entries) {
+                  entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                      var current = 0;
+                      var step = Math.max(1, Math.floor(target / 60));
+                      var interval = setInterval(function () {
+                        current += step;
+                        if (current >= target) {
+                          counter.textContent = target.toLocaleString();
+                          clearInterval(interval);
+                        } else {
+                          counter.textContent = current.toLocaleString();
+                        }
+                      }, 30);
+                      observer.unobserve(counter);
+                    }
+                  });
+                },
+                { threshold: 0.5 },
+              );
+              observer.observe(counter);
+            });
+        }
+        animateCounters();
+
+        // ===== LOAD SEMUA DATA =====
+        loadAllData();
+
+        // ===== LOAD SWOT =====
+        if (typeof SWOT !== "undefined") {
+          var swotData = CRUD.getLocalData("swot");
+          if (!swotData) {
+            var defaultSwot = SWOT.getDefaultSWOT();
+            CRUD.saveData("swot", defaultSwot);
+          }
+          SWOT.renderForm("swotContainer");
+        }
+
+        // Welcome Toast
+        setTimeout(function () {
+          showToast("Selamat datang di SIPEDES - Desa Sleman", "info", 2500);
+        }, 1200);
+
+        // Cek user login
+        var user = isLoggedIn();
+        if (user) {
+          setTimeout(function () {
+            showToast("Halo, " + user.nama + "!", "success", 2000);
+          }, 2000);
+        }
+
+        console.log(
+          "%c SIPEDES - Desa Sleman ",
+          "background:#0f4c3a;color:#fff;padding:12px 24px;font-size:20px;font-weight:700;border-radius:6px;",
+        );
+        console.log(
+          "%c Kuadran I - Agresif (SO) ",
+          "background:#2e7d32;color:#fff;padding:4px 12px;border-radius:4px;",
+        );
+      });
+    </script>
+  </body>
+</html>

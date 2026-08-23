@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Kepala Desa · SIPEDES</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/png" href="assets/images/logo.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/print.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .report-container {
+        padding: 30px;
+        background: #fff;
+        font-family: "Inter", sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .report-header {
+        text-align: center;
+        border-bottom: 3px solid #e65100;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .report-header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        color: #e65100;
+        margin: 0;
+      }
+      .report-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #4a5a62;
+        margin: 4px 0;
+      }
+      .report-header p {
+        font-size: 12px;
+        color: #7a8a92;
+        margin: 2px 0;
+      }
+      .report-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #e65100;
+        margin: 16px 0 20px;
+        padding: 8px;
+        background: #fff3e0;
+        border-radius: 6px;
+      }
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 12px 0;
+      }
+      .report-table th {
+        background: #e65100;
+        color: #fff;
+        padding: 8px 10px;
+        text-align: left;
+        font-weight: 600;
+      }
+      .report-table td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #e0e3d8;
+      }
+      .report-table tr:hover td {
+        background: #f7f5f0;
+      }
+      .report-footer {
+        text-align: center;
+        border-top: 1px solid #e0e3d8;
+        padding-top: 12px;
+        margin-top: 20px;
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-signature {
+        display: flex;
+        justify-content: flex-end;
+        gap: 60px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e3d8;
+      }
+      .report-signature .signature-box {
+        text-align: center;
+        min-width: 180px;
+      }
+      .report-signature .signature-box .line {
+        border-bottom: 1px solid #1e2a2f;
+        width: 180px;
+        margin: 30px auto 4px;
+      }
+      .report-signature .signature-box .label {
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #7a8a92;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background: #f7f5f0;
+        border-radius: 6px;
+      }
+      .badge-status {
+        display: inline-block;
+        padding: 1px 10px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .badge-status.berjalan {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-status.perencanaan {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .badge-status.selesai {
+        background: #e3f2fd;
+        color: #0d47a1;
+      }
+      .report-section {
+        margin: 16px 0;
+      }
+      .report-section h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #e65100;
+        margin: 12px 0 8px;
+        padding: 4px 10px;
+        background: #f0f0f0;
+        border-left: 4px solid #e65100;
+      }
+      .report-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .report-summary-item {
+        background: #f7f5f0;
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .report-summary-item .number {
+        font-size: 22px;
+        font-weight: 800;
+        color: #e65100;
+      }
+      .report-summary-item .label {
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-swot-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 12px 0;
+      }
+      .report-swot-box {
+        padding: 12px;
+        border-radius: 6px;
+        border-left: 4px solid;
+      }
+      .report-swot-box h5 {
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .report-swot-box ul {
+        list-style: none;
+        padding: 0;
+      }
+      .report-swot-box ul li {
+        font-size: 11px;
+        padding: 2px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .report-swot-box ul li:last-child {
+        border-bottom: none;
+      }
+      @media (max-width: 768px) {
+        .report-summary-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .report-swot-grid {
+          grid-template-columns: 1fr;
+        }
+        .report-signature {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+      }
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== TOAST ===== -->
+    <div id="toastContainer"></div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="container">
+        <nav class="navbar">
+          <a href="dashboard-kades.html" class="brand">
+            <img src="assets/images/logo.png" alt="SIPEDES" />
+            <span>SIPEDES</span>
+            <small>Kades</small>
+          </a>
+          <div class="nav-menu">
+            <a href="dashboard-kades.html" class="active"
+              ><i class="fas fa-gauge-high"></i
+            ></a>
+            <a href="index.html"><i class="fas fa-home"></i></a>
+            <a href="logout.html" class="nav-logout"
+              ><i class="fas fa-sign-out-alt"></i
+            ></a>
+            <span class="role-badge" style="background: #e65100">Kades</span>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="dashboard-wrapper">
+      <div class="container">
+        <!-- HEADER -->
+        <div class="dashboard-header">
+          <div class="title">
+            <h1>Dashboard <span style="color: #e65100">Kepala Desa</span></h1>
+            <p>
+              Pantau informasi, laporan, dan hasil analisis SWOT untuk
+              pengambilan keputusan
+            </p>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+            "
+          >
+            <div class="user-info">
+              <div class="avatar" style="background: #e65100" id="userAvatar">
+                K
+              </div>
+              <div>
+                <div class="name" id="userName">Kepala Desa</div>
+                <div class="role-text">Kepala Desa Sleman</div>
+              </div>
+            </div>
+            <button
+              class="btn-logout"
+              onclick="window.location.href = 'logout.html'"
+            >
+              <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-number">4.975</div>
+            <div class="stat-label">Penduduk</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd; color: #0d47a1">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <div class="stat-number">505,5</div>
+            <div class="stat-label">Ha Lahan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #2e7d32; color: #fff">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="stat-number" id="statKuadran" style="color: #2e7d32">
+              Kuadran I
+            </div>
+            <div class="stat-label">Posisi SWOT</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5; color: #6a1b9a">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="stat-number" id="statStrategi">6</div>
+            <div class="stat-label">Strategi</div>
+          </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="dashboard-grid">
+          <!-- KIRI -->
+          <div>
+            <!-- APBDes CHART -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-chart-bar"></i> APBDes</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(View Only)</span
+                >
+              </div>
+              <div class="card-body">
+                <div
+                  id="apbdesSummary"
+                  style="
+                    margin-bottom: 12px;
+                    font-size: 13px;
+                    color: var(--text-light);
+                    text-align: center;
+                  "
+                ></div>
+                <div class="chart-container">
+                  <canvas id="apbdesChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- LAPORAN & INFORMASI -->
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Laporan & Informasi</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(View Only)</span
+                >
+              </div>
+              <div class="card-body">
+                <div class="menu-grid">
+                  <a
+                    href="index.html#profil"
+                    class="menu-item view-only"
+                    onclick="showToast('Membuka Profil Desa...', 'info')"
+                  >
+                    <i class="fas fa-info-circle"></i><span>Profil Desa</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#potensi"
+                    class="menu-item view-only"
+                    onclick="showToast('Membuka Potensi Desa...', 'info')"
+                  >
+                    <i class="fas fa-seedling"></i><span>Potensi</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#swot"
+                    class="menu-item view-only"
+                    onclick="showToast('Membuka Analisis SWOT...', 'info')"
+                  >
+                    <i class="fas fa-chart-pie"></i><span>SWOT</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#strategi"
+                    class="menu-item view-only"
+                    onclick="showToast('Membuka Strategi...', 'info')"
+                  >
+                    <i class="fas fa-bullseye"></i><span>Strategi</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#program"
+                    class="menu-item view-only"
+                    style="grid-column: 1/-1"
+                    onclick="showToast('Membuka Program...', 'info')"
+                  >
+                    <i class="fas fa-tasks"></i><span>Program</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KANAN -->
+          <div>
+            <!-- EXPORT -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Ekspor Laporan</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(PDF Profesional)</span
+                >
+              </div>
+              <div class="card-body">
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <button
+                    class="btn-export btn-export-pdf"
+                    onclick="exportProfessionalPDF()"
+                  >
+                    <i class="fas fa-file-pdf"></i> PDF Laporan
+                  </button>
+                  <button
+                    class="btn-export btn-export-excel"
+                    onclick="exportToExcel()"
+                  >
+                    <i class="fas fa-file-excel"></i> Excel
+                  </button>
+                  <button
+                    class="btn-export btn-export-print"
+                    onclick="window.print()"
+                  >
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+                <div
+                  style="
+                    font-size: 11px;
+                    color: var(--text-muted);
+                    background: #f8f6f0;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                  "
+                >
+                  <i class="fas fa-info-circle"></i> Laporan PDF profesional
+                  dengan kop surat, tabel data, dan tanda tangan
+                </div>
+              </div>
+            </div>
+
+            <!-- INFO DESA -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-info-circle"></i> Info Desa</h3>
+              </div>
+              <div class="card-body">
+                <div class="info-grid">
+                  <div class="info-item">
+                    <div class="info-label">Kepala Desa</div>
+                    <div class="info-value">Abdul Goni</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label">Luas Wilayah</div>
+                    <div class="info-value">547,35 Ha</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label">Jumlah Dusun</div>
+                    <div class="info-value">4 Dusun</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label">Posisi SWOT</div>
+                    <div
+                      class="info-value"
+                      id="infoKuadran"
+                      style="color: #2e7d32; font-weight: 700"
+                    >
+                      Kuadran I (Agresif/SO)
+                    </div>
+                  </div>
+                  <div class="info-item" style="grid-column: 1/-1">
+                    <div class="info-label">Aparat Desa</div>
+                    <div class="info-value">13 Orang</div>
+                  </div>
+                  <div class="info-item" style="grid-column: 1/-1">
+                    <div class="info-label">Strategi Aktif</div>
+                    <div class="info-value" id="infoStrategi">6 Strategi</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AKTIVITAS -->
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Aktivitas</h3>
+              </div>
+              <div class="card-body">
+                <div id="activityContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/crud.js"></script>
+    <script src="js/export.js"></script>
+    <script>
+      // ============================================================
+      // TOAST
+      // ============================================================
+      function showToast(message, type, duration) {
+        type = type || "info";
+        duration = duration || 3500;
+        var container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        var colors = {
+          success: {
+            bg: "linear-gradient(135deg, #2e7d32, #1b5e20)",
+            icon: "fa-check-circle",
+          },
+          error: {
+            bg: "linear-gradient(135deg, #c62828, #b71c1c)",
+            icon: "fa-exclamation-circle",
+          },
+          warning: {
+            bg: "linear-gradient(135deg, #e65100, #bf360c)",
+            icon: "fa-triangle-exclamation",
+          },
+          info: {
+            bg: "linear-gradient(135deg, #0d47a1, #0a3a7a)",
+            icon: "fa-info-circle",
+          },
+        };
+
+        var color = colors[type] || colors.info;
+        var notif = document.createElement("div");
+        notif.className = "toast " + type;
+        notif.style.background = color.bg;
+        notif.innerHTML =
+          '<i class="fas ' +
+          color.icon +
+          '"></i><span class="toast-content">' +
+          message +
+          '</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+        container.appendChild(notif);
+
+        setTimeout(function () {
+          notif.classList.add("hide");
+          setTimeout(function () {
+            notif.remove();
+          }, 500);
+        }, duration);
+      }
+
+      // ============================================================
+      // LOCAL STORAGE
+      // ============================================================
+      var KEYS = {
+        swot: "sipedes_swot",
+        strategi: "sipedes_strategi",
+        program: "sipedes_program",
+        apbdes: "sipedes_apbdes",
+        aktivitas: "sipedes_aktivitas",
+      };
+
+      function getData(key, defaultData) {
+        var stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            var parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (!Array.isArray(parsed) && parsed !== null) return parsed;
+          } catch (e) {}
+        }
+        return defaultData;
+      }
+
+      var DEFAULT_DATA = {
+        strategi: [
+          {
+            id: 1,
+            nama: "Pengembangan Pertanian Modern dan Diversifikasi Komoditas",
+            tipe: "SO",
+          },
+          {
+            id: 2,
+            nama: "Penguatan BUMDes sebagai Motor Penggerak Ekonomi Desa",
+            tipe: "SO",
+          },
+          {
+            id: 3,
+            nama: "Pengembangan UMKM Berbasis Teknologi Digital",
+            tipe: "WO",
+          },
+          {
+            id: 4,
+            nama: "Peningkatan Kualitas Sumber Daya Manusia",
+            tipe: "WO",
+          },
+          {
+            id: 5,
+            nama: "Diversifikasi Ekonomi dan Mitigasi Risiko",
+            tipe: "ST",
+          },
+          {
+            id: 6,
+            nama: "Penguatan Kelembagaan dan Partisipasi Masyarakat",
+            tipe: "WT",
+          },
+        ],
+        apbdes: [
+          {
+            id: 1,
+            tahun: 2024,
+            pendapatan: { total: 2155218000 },
+            belanja: { total: 2193650344 },
+            defisit: -38432344,
+          },
+          {
+            id: 2,
+            tahun: 2025,
+            pendapatan: { total: 2123726000 },
+            belanja: { total: 2186961683 },
+            defisit: -63235683,
+          },
+        ],
+      };
+
+      // ============================================================
+      // HITUNG SWOT
+      // ============================================================
+      function hitungSWOT() {
+        var swot = CRUD.getLocalData("swot");
+        if (!swot || !swot.faktor) {
+          return {
+            kuadran: "I",
+            strategi: "Agresif (SO)",
+            deskripsi: "Memanfaatkan kekuatan untuk merebut peluang yang ada",
+            warna: "#2e7d32",
+            selisihSW: 1.22,
+            selisihOT: 0.67,
+          };
+        }
+
+        var s = swot.faktor.kekuatan || [];
+        var w = swot.faktor.kelemahan || [];
+        var o = swot.faktor.peluang || [];
+        var t = swot.faktor.ancaman || [];
+
+        var totalS = s.reduce(function (sum, f) {
+          return sum + f.bobot * f.rating;
+        }, 0);
+        var totalW = w.reduce(function (sum, f) {
+          return sum + f.bobot * f.rating;
+        }, 0);
+        var totalO = o.reduce(function (sum, f) {
+          return sum + f.bobot * f.rating;
+        }, 0);
+        var totalT = t.reduce(function (sum, f) {
+          return sum + f.bobot * f.rating;
+        }, 0);
+
+        var selisihSW = totalS - totalW;
+        var selisihOT = totalO - totalT;
+
+        var kuadran, strategi, deskripsi, warna;
+        if (selisihSW > 0 && selisihOT > 0) {
+          kuadran = "I";
+          strategi = "Agresif (SO)";
+          deskripsi = "Memanfaatkan kekuatan untuk merebut peluang yang ada";
+          warna = "#2e7d32";
+        } else if (selisihSW < 0 && selisihOT > 0) {
+          kuadran = "II";
+          strategi = "Diversifikasi (ST)";
+          deskripsi = "Menggunakan kekuatan untuk menghadapi ancaman";
+          warna = "#e65100";
+        } else if (selisihSW < 0 && selisihOT < 0) {
+          kuadran = "III";
+          strategi = "Turnaround (WO)";
+          deskripsi = "Memperbaiki kelemahan dengan memanfaatkan peluang";
+          warna = "#0d47a1";
+        } else {
+          kuadran = "IV";
+          strategi = "Defensif (WT)";
+          deskripsi = "Meminimalkan kelemahan dan menghindari ancaman";
+          warna = "#c62828";
+        }
+
+        return {
+          kuadran: kuadran,
+          strategi: strategi,
+          deskripsi: deskripsi,
+          warna: warna,
+          selisihSW: selisihSW,
+          selisihOT: selisihOT,
+        };
+      }
+
+      // ============================================================
+      // LOAD FUNCTIONS
+      // ============================================================
+      function loadChart() {
+        var data = getData(KEYS.apbdes, DEFAULT_DATA.apbdes);
+        var labels = data.map(function (item) {
+          return item.tahun || "";
+        });
+        var p = data.map(function (item) {
+          return (item.pendapatan?.total || 0) / 1000000;
+        });
+        var b = data.map(function (item) {
+          return (item.belanja?.total || 0) / 1000000;
+        });
+        var cl = labels.length > 0 ? labels : ["2024", "2025"];
+        var cp = p.length > 0 ? p : [2155, 2124];
+        var cb = b.length > 0 ? b : [2194, 2187];
+        var ctx = document.getElementById("apbdesChart")?.getContext("2d");
+        if (!ctx) return;
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: cl,
+            datasets: [
+              {
+                label: "Pendapatan (Rp Juta)",
+                data: cp,
+                backgroundColor: "rgba(230,81,0,0.8)",
+                borderColor: "#e65100",
+                borderWidth: 2,
+                borderRadius: 4,
+              },
+              {
+                label: "Belanja (Rp Juta)",
+                data: cb,
+                backgroundColor: "rgba(201,149,107,0.8)",
+                borderColor: "#c9956b",
+                borderWidth: 2,
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  usePointStyle: true,
+                  font: { family: "Inter", size: 10 },
+                  padding: 12,
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (v) {
+                    return "Rp" + v.toLocaleString();
+                  },
+                  font: { family: "Inter", size: 9 },
+                },
+                grid: { color: "rgba(0,0,0,0.05)" },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { font: { family: "Inter", size: 11, weight: "600" } },
+              },
+            },
+          },
+        });
+
+        var summary = document.getElementById("apbdesSummary");
+        var last = data[data.length - 1];
+        if (last) {
+          var def =
+            last.defisit || last.pendapatan?.total - last.belanja?.total;
+          var warna = def < 0 ? "#c62828" : "#2e7d32";
+          summary.innerHTML =
+            "<strong>" +
+            last.tahun +
+            "</strong> · Pendapatan: <strong>Rp" +
+            (last.pendapatan?.total || 0).toLocaleString() +
+            "</strong> · Belanja: <strong>Rp" +
+            (last.belanja?.total || 0).toLocaleString() +
+            '</strong> · Defisit: <strong style="color:' +
+            warna +
+            ';">' +
+            (def < 0 ? "-" : "") +
+            "Rp" +
+            Math.abs(def).toLocaleString() +
+            "</strong>";
+        }
+      }
+
+      function loadSWOTInfo() {
+        var result = hitungSWOT();
+        document.getElementById("statKuadran").textContent =
+          "Kuadran " + result.kuadran;
+        document.getElementById("statKuadran").style.color = result.warna;
+        document.getElementById("infoKuadran").innerHTML =
+          "<strong>Kuadran " +
+          result.kuadran +
+          "</strong> (" +
+          result.strategi +
+          ')<br><span style="font-size:11px;font-weight:400;color:#7a8a92;">S-W: ' +
+          (result.selisihSW >= 0 ? "+" : "") +
+          result.selisihSW.toFixed(2) +
+          " · O-T: " +
+          (result.selisihOT >= 0 ? "+" : "") +
+          result.selisihOT.toFixed(2) +
+          "</span>";
+        document.getElementById("infoKuadran").style.color = result.warna;
+      }
+
+      function loadStrategiCount() {
+        var s = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+        document.getElementById("statStrategi").textContent = s.length;
+        document.getElementById("infoStrategi").textContent =
+          s.length + " Strategi";
+      }
+
+      function loadActivity() {
+        var c = document.getElementById("activityContainer");
+        if (!c) return;
+        var data = getData(KEYS.aktivitas, []);
+        if (data.length === 0) {
+          data = [
+            {
+              text: "Sistem SIPEDES <strong>diaktifkan</strong>",
+              time: "Baru saja",
+              type: "success",
+              icon: "fa-check",
+            },
+          ];
+          localStorage.setItem(KEYS.aktivitas, JSON.stringify(data));
+        }
+        var latest = data.slice(-5).reverse();
+        var colorMap = {
+          success: "green",
+          warning: "orange",
+          info: "blue",
+          error: "red",
+        };
+        var html = "";
+        for (var i = 0; i < latest.length; i++) {
+          var act = latest[i];
+          html +=
+            '<div class="activity-item"><div class="icon ' +
+            (colorMap[act.type] || "blue") +
+            '"><i class="fas ' +
+            (act.icon || "fa-check") +
+            '"></i></div><div class="content"><div class="text">' +
+            act.text +
+            '</div><div class="time">' +
+            act.time +
+            "</div></div></div>";
+        }
+        c.innerHTML = html;
+      }
+
+      // ============================================================
+      // EXPORT PROFESSIONAL PDF
+      // ============================================================
+      function exportProfessionalPDF() {
+        showToast("Menyiapkan laporan PDF profesional...", "info");
+
+        var strategi = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+        var apbdes = getData(KEYS.apbdes, DEFAULT_DATA.apbdes);
+        var swot = CRUD.getLocalData("swot");
+        var desa = CRUD.getLocalData("desa");
+
+        var now = new Date();
+        var tanggal = now.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+        var namaUser = localStorage.getItem("sipedes_user")
+          ? JSON.parse(localStorage.getItem("sipedes_user")).nama
+          : "Kepala Desa";
+
+        var reportHTML = `
+      <div class="report-container" id="reportContent">
+        <div class="report-header">
+          <h1>PEMERINTAH DESA SLEMAN</h1>
+          <h2>Kecamatan Sliyeg · Kabupaten Indramayu</h2>
+          <p>Jl. Raya Sliyeg No. 123, Kecamatan Sliyeg, Kabupaten Indramayu</p>
+          <p style="font-size:11px;color:#999;">Email: desasleman@indramayu.go.id</p>
+          <hr style="border:1px solid #e65100;margin:8px 0;">
+          <p style="font-size:13px;font-weight:600;color:#e65100;">LAPORAN SISTEM INFORMASI POTENSI DESA (SIPEDES)</p>
+          <p style="font-size:12px;">Periode: ${tanggal}</p>
+        </div>
+
+        <div class="report-meta">
+          <span><strong>Dicetak oleh:</strong> ${namaUser}</span>
+          <span><strong>Tanggal:</strong> ${tanggal}</span>
+          <span><strong>Status:</strong> Laporan Kepala Desa</span>
+        </div>
+
+        <div class="report-title">LAPORAN DATA DESA SLEMAN</div>
+
+        <div class="report-summary-grid">
+          <div class="report-summary-item">
+            <div class="number">${desa && desa.demografi ? desa.demografi.total_penduduk.toLocaleString() : "4.975"}</div>
+            <div class="label">Total Penduduk</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${desa && desa.identitas ? desa.identitas.luas_wilayah : "547,35"}</div>
+            <div class="label">Luas Wilayah (Ha)</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${strategi.length}</div>
+            <div class="label">Strategi</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${swot && swot.hasil ? swot.hasil.kuadran : "I"}</div>
+            <div class="label">Kuadran SWOT</div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h4>A. PROFIL DESA SLEMAN</h4>
+          <table class="report-table">
+            <tr><td style="width:40%;font-weight:600;">Nama Desa</td><td>${desa && desa.identitas ? desa.identitas.nama_desa : "Sleman"}</td></tr>
+            <tr><td style="font-weight:600;">Kecamatan</td><td>${desa && desa.identitas ? desa.identitas.kecamatan : "Sliyeg"}</td></tr>
+            <tr><td style="font-weight:600;">Kabupaten</td><td>${desa && desa.identitas ? desa.identitas.kabupaten : "Indramayu"}</td></tr>
+            <tr><td style="font-weight:600;">Kepala Desa</td><td>${desa && desa.identitas ? desa.identitas.kepala_desa : "Abdul Goni"}</td></tr>
+            <tr><td style="font-weight:600;">Luas Wilayah</td><td>${desa && desa.identitas ? desa.identitas.luas_wilayah : "547,35"} Ha</td></tr>
+            <tr><td style="font-weight:600;">Jumlah Dusun</td><td>${desa && desa.identitas ? desa.identitas.jumlah_dusun : "4"}</td></tr>
+            <tr><td style="font-weight:600;">Aparat Desa</td><td>${desa && desa.identitas ? desa.identitas.jumlah_aparat : "13"} orang</td></tr>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>B. ANGGARAN PENDAPATAN DAN BELANJA DESA (APBDes)</h4>
+          <table class="report-table">
+            <thead><tr><th>Tahun</th><th style="text-align:right;">Pendapatan</th><th style="text-align:right;">Belanja</th><th style="text-align:right;">Defisit/Surplus</th></tr></thead>
+            <tbody>`;
+        for (var i = 0; i < apbdes.length; i++) {
+          var item = apbdes[i];
+          var def =
+            item.defisit || item.pendapatan?.total - item.belanja?.total;
+          reportHTML += `<tr><td><strong>${item.tahun}</strong></td><td style="text-align:right;">Rp${(item.pendapatan?.total || 0).toLocaleString()}</td><td style="text-align:right;">Rp${(item.belanja?.total || 0).toLocaleString()}</td><td style="text-align:right;color:${def < 0 ? "#c62828" : "#2e7d32"};">${def < 0 ? "-" : ""}Rp${Math.abs(def).toLocaleString()}</td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>C. STRATEGI PENGEMBANGAN</h4>
+          <table class="report-table">
+            <thead><tr><th>No</th><th>Nama Strategi</th><th>Tipe</th></tr></thead>
+            <tbody>`;
+        var tipeLabel = {
+          SO: "Agresif",
+          WO: "Turnaround",
+          ST: "Diversifikasi",
+          WT: "Defensif",
+        };
+        for (var i = 0; i < strategi.length; i++) {
+          reportHTML += `<tr><td>${i + 1}</td><td>${strategi[i].nama}</td><td>${tipeLabel[strategi[i].tipe] || strategi[i].tipe}</td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>D. HASIL ANALISIS SWOT</h4>
+          <table class="report-table">
+            <thead><tr><th>Komponen</th><th>Nilai</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Posisi Kuadran</strong></td><td style="font-weight:700;color:#2e7d32;">Kuadran ${swot && swot.hasil ? swot.hasil.kuadran : "I"} (${swot && swot.hasil ? swot.hasil.strategi : "Agresif SO"})</td></tr>
+              <tr><td><strong>Strategi</strong></td><td style="font-weight:700;color:#2e7d32;">${swot && swot.hasil ? swot.hasil.deskripsi : "Memanfaatkan kekuatan untuk merebut peluang"}</td></tr>
+              <tr><td><strong>Selisih (S - W)</strong></td><td style="color:#2e7d32;font-weight:700;">${swot && swot.hasil ? (swot.hasil.selisih_s_w >= 0 ? "+" : "") + swot.hasil.selisih_s_w.toFixed(2) : "+1.22"}</td></tr>
+              <tr><td><strong>Selisih (O - T)</strong></td><td style="color:#0d47a1;font-weight:700;">${swot && swot.hasil ? (swot.hasil.selisih_o_t >= 0 ? "+" : "") + swot.hasil.selisih_o_t.toFixed(2) : "+0.67"}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>E. SWOT MATRIKS</h4>
+          <div class="report-swot-grid">
+            <div class="report-swot-box" style="border-color:#2e7d32;background:#e8f5e9;">
+              <h5 style="color:#2e7d32;">KEKUATAN (S)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.kekuatan) {
+          for (var i = 0; i < swot.faktor.kekuatan.length; i++) {
+            reportHTML += `<li>${swot.faktor.kekuatan[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#c62828;background:#ffebee;">
+              <h5 style="color:#c62828;">KELEMAHAN (W)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.kelemahan) {
+          for (var i = 0; i < swot.faktor.kelemahan.length; i++) {
+            reportHTML += `<li>${swot.faktor.kelemahan[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#0d47a1;background:#e3f2fd;">
+              <h5 style="color:#0d47a1;">PELUANG (O)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.peluang) {
+          for (var i = 0; i < swot.faktor.peluang.length; i++) {
+            reportHTML += `<li>${swot.faktor.peluang[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#e65100;background:#fff3e0;">
+              <h5 style="color:#e65100;">ANCAMAN (T)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.ancaman) {
+          for (var i = 0; i < swot.faktor.ancaman.length; i++) {
+            reportHTML += `<li>${swot.faktor.ancaman[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-signature">
+          <div class="signature-box">
+            <div class="line"></div>
+            <div class="label">Kepala Desa Sleman</div>
+            <div style="font-weight:600;margin-top:4px;">${desa && desa.identitas ? desa.identitas.kepala_desa : "Abdul Goni"}</div>
+          </div>
+          <div class="signature-box">
+            <div class="line"></div>
+            <div class="label">Dicetak oleh</div>
+            <div style="font-weight:600;margin-top:4px;">${namaUser}</div>
+          </div>
+        </div>
+
+        <div class="report-footer">
+          <p>Laporan ini dibuat secara otomatis oleh Sistem Informasi Potensi Desa (SIPEDES)</p>
+          <p>Desa Sleman, Kecamatan Sliyeg, Kabupaten Indramayu</p>
+          <p>&copy; ${new Date().getFullYear()} SIPEDES - All Rights Reserved</p>
+        </div>
+      </div>
+      `;
+
+        var wrapper = document.createElement("div");
+        wrapper.innerHTML = reportHTML;
+        var style = document.createElement("style");
+        style.textContent = `
+        .report-container { padding: 30px; background: #fff; font-family: 'Inter', sans-serif; max-width: 1000px; margin: 0 auto; }
+        .report-header { text-align: center; border-bottom: 3px solid #e65100; padding-bottom: 15px; margin-bottom: 20px; }
+        .report-header h1 { font-size: 24px; font-weight: 800; color: #e65100; margin: 0; }
+        .report-header h2 { font-size: 16px; font-weight: 600; color: #4a5a62; margin: 4px 0; }
+        .report-header p { font-size: 12px; color: #7a8a92; margin: 2px 0; }
+        .report-title { text-align: center; font-size: 18px; font-weight: 700; color: #e65100; margin: 16px 0 20px; padding: 8px; background: #fff3e0; border-radius: 6px; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+        .report-table th { background: #e65100; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+        .report-table td { padding: 6px 10px; border-bottom: 1px solid #e0e3d8; }
+        .report-table tr:hover td { background: #f7f5f0; }
+        .report-footer { text-align: center; border-top: 1px solid #e0e3d8; padding-top: 12px; margin-top: 20px; font-size: 11px; color: #7a8a92; }
+        .report-signature { display: flex; justify-content: flex-end; gap: 60px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e3d8; }
+        .report-signature .signature-box { text-align: center; min-width: 180px; }
+        .report-signature .signature-box .line { border-bottom: 1px solid #1e2a2f; width: 180px; margin: 30px auto 4px; }
+        .report-signature .signature-box .label { font-size: 11px; color: #7a8a92; }
+        .report-meta { display: flex; justify-content: space-between; font-size: 12px; color: #7a8a92; margin-bottom: 12px; padding: 8px 12px; background: #f7f5f0; border-radius: 6px; }
+        .badge-status { display: inline-block; padding: 1px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .badge-status.berjalan { background: #e8f5e9; color: #2e7d32; }
+        .badge-status.perencanaan { background: #fff3e0; color: #e65100; }
+        .badge-status.selesai { background: #e3f2fd; color: #0d47a1; }
+        .report-section { margin: 16px 0; }
+        .report-section h4 { font-size: 14px; font-weight: 700; color: #e65100; margin: 12px 0 8px; padding: 4px 10px; background: #f0f0f0; border-left: 4px solid #e65100; }
+        .report-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+        .report-summary-item { background: #f7f5f0; padding: 10px; border-radius: 6px; text-align: center; }
+        .report-summary-item .number { font-size: 22px; font-weight: 800; color: #e65100; }
+        .report-summary-item .label { font-size: 11px; color: #7a8a92; }
+        .report-swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+        .report-swot-box { padding: 12px; border-radius: 6px; border-left: 4px solid; }
+        .report-swot-box h5 { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+        .report-swot-box ul { list-style: none; padding: 0; }
+        .report-swot-box ul li { font-size: 11px; padding: 2px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .report-swot-box ul li:last-child { border-bottom: none; }
+        @media (max-width: 768px) {
+          .report-summary-grid { grid-template-columns: 1fr 1fr; }
+          .report-swot-grid { grid-template-columns: 1fr; }
+          .report-signature { flex-direction: column; align-items: center; gap: 20px; }
+        }
+        @media print { .no-print { display: none !important; } }
+      `;
+        wrapper.appendChild(style);
+        document.body.appendChild(wrapper);
+
+        var reportElement = wrapper.querySelector(".report-container");
+
+        html2canvas(reportElement, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          width: 1000,
+          windowWidth: 1000,
+        })
+          .then(function (canvas) {
+            var imgData = canvas.toDataURL("image/png");
+            var pdf = new jspdf.jsPDF("p", "mm", "a4");
+            var imgWidth = 210;
+            var imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+            var pageHeight = 297;
+            var heightLeft = imgHeight - pageHeight;
+            var position = 0;
+
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+            }
+
+            pdf.save(
+              "Laporan_SIPEDES_Kades_" +
+                now.toISOString().slice(0, 10) +
+                ".pdf",
+            );
+            wrapper.remove();
+            showToast("Laporan PDF profesional berhasil diekspor!", "success");
+          })
+          .catch(function (err) {
+            showToast("Gagal export PDF: " + err.message, "error");
+            wrapper.remove();
+          });
+      }
+
+      // ============================================================
+      // EXPORT EXCEL
+      // ============================================================
+      function exportToExcel() {
+        showToast("Menyiapkan Excel...", "info");
+        setTimeout(function () {
+          try {
+            var workbook = XLSX.utils.book_new();
+            var sw = CRUD.getLocalData("swot");
+            var s = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+            var apb = getData(KEYS.apbdes, DEFAULT_DATA.apbdes);
+
+            // SWOT
+            if (sw && sw.faktor) {
+              var swotData = [
+                ["Kategori", "ID", "Nama", "Bobot", "Rating", "Skor"],
+              ];
+              ["kekuatan", "kelemahan", "peluang", "ancaman"].forEach(
+                function (kat) {
+                  (sw.faktor[kat] || []).forEach(function (f) {
+                    swotData.push([
+                      kat,
+                      f.id,
+                      f.nama,
+                      f.bobot,
+                      f.rating,
+                      (f.bobot * f.rating).toFixed(2),
+                    ]);
+                  });
+                },
+              );
+              var ws1 = XLSX.utils.aoa_to_sheet(swotData);
+              XLSX.utils.book_append_sheet(workbook, ws1, "SWOT");
+            }
+
+            // Strategi
+            var strategiData = [["ID", "Nama Strategi", "Tipe"]];
+            for (var i = 0; i < s.length; i++) {
+              strategiData.push([s[i].id, s[i].nama, s[i].tipe]);
+            }
+            var ws2 = XLSX.utils.aoa_to_sheet(strategiData);
+            XLSX.utils.book_append_sheet(workbook, ws2, "Strategi");
+
+            // APBDes
+            var apbData = [["Tahun", "Pendapatan", "Belanja", "Defisit"]];
+            for (var i = 0; i < apb.length; i++) {
+              apbData.push([
+                apb[i].tahun,
+                apb[i].pendapatan?.total || 0,
+                apb[i].belanja?.total || 0,
+                apb[i].defisit || 0,
+              ]);
+            }
+            var ws3 = XLSX.utils.aoa_to_sheet(apbData);
+            XLSX.utils.book_append_sheet(workbook, ws3, "APBDes");
+
+            XLSX.writeFile(workbook, "Laporan_SIPEDES_Kades.xlsx");
+            showToast("Excel berhasil diekspor!", "success");
+          } catch (e) {
+            showToast("Gagal export Excel: " + e.message, "error");
+          }
+        }, 500);
+      }
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        var userData = localStorage.getItem("sipedes_user");
+        if (!userData) {
+          showToast("Silakan login terlebih dahulu", "warning");
+          setTimeout(function () {
+            window.location.href = "login.html";
+          }, 1000);
+          return;
+        }
+
+        var user = JSON.parse(userData);
+        if (user.role !== "kades") {
+          var pages = {
+            admin: "dashboard-admin.html",
+            perangkat: "dashboard-perangkat.html",
+          };
+          showToast("Redirect ke dashboard " + user.role, "info");
+          setTimeout(function () {
+            window.location.href = pages[user.role] || "index.html";
+          }, 500);
+          return;
+        }
+
+        document.getElementById("userAvatar").textContent = user.nama
+          .charAt(0)
+          .toUpperCase();
+        document.getElementById("userName").textContent = user.nama;
+
+        loadChart();
+        loadSWOTInfo();
+        loadStrategiCount();
+        loadActivity();
+
+        showToast("Selamat datang, " + user.nama + "!", "success", 3000);
+      });
+    </script>
+  </body>
+</html>

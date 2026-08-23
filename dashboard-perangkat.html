@@ -1,0 +1,1984 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Perangkat Desa · SIPEDES</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/png" href="assets/images/logo.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/print.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .report-container {
+        padding: 30px;
+        background: #fff;
+        font-family: "Inter", sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .report-header {
+        text-align: center;
+        border-bottom: 3px solid #0d47a1;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .report-header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0d47a1;
+        margin: 0;
+      }
+      .report-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #4a5a62;
+        margin: 4px 0;
+      }
+      .report-header p {
+        font-size: 12px;
+        color: #7a8a92;
+        margin: 2px 0;
+      }
+      .report-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #0d47a1;
+        margin: 16px 0 20px;
+        padding: 8px;
+        background: #e3f2fd;
+        border-radius: 6px;
+      }
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 12px 0;
+      }
+      .report-table th {
+        background: #0d47a1;
+        color: #fff;
+        padding: 8px 10px;
+        text-align: left;
+        font-weight: 600;
+      }
+      .report-table td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #e0e3d8;
+      }
+      .report-table tr:hover td {
+        background: #f7f5f0;
+      }
+      .report-footer {
+        text-align: center;
+        border-top: 1px solid #e0e3d8;
+        padding-top: 12px;
+        margin-top: 20px;
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-signature {
+        display: flex;
+        justify-content: flex-end;
+        gap: 60px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e3d8;
+      }
+      .report-signature .signature-box {
+        text-align: center;
+        min-width: 180px;
+      }
+      .report-signature .signature-box .line {
+        border-bottom: 1px solid #1e2a2f;
+        width: 180px;
+        margin: 30px auto 4px;
+      }
+      .report-signature .signature-box .label {
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #7a8a92;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background: #f7f5f0;
+        border-radius: 6px;
+      }
+      .badge-status {
+        display: inline-block;
+        padding: 1px 10px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .badge-status.berjalan {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-status.perencanaan {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .badge-status.selesai {
+        background: #e3f2fd;
+        color: #0d47a1;
+      }
+      .report-section {
+        margin: 16px 0;
+      }
+      .report-section h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0d47a1;
+        margin: 12px 0 8px;
+        padding: 4px 10px;
+        background: #f0f0f0;
+        border-left: 4px solid #0d47a1;
+      }
+      .report-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .report-summary-item {
+        background: #f7f5f0;
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .report-summary-item .number {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0d47a1;
+      }
+      .report-summary-item .label {
+        font-size: 11px;
+        color: #7a8a92;
+      }
+      .report-swot-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 12px 0;
+      }
+      .report-swot-box {
+        padding: 12px;
+        border-radius: 6px;
+        border-left: 4px solid;
+      }
+      .report-swot-box h5 {
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .report-swot-box ul {
+        list-style: none;
+        padding: 0;
+      }
+      .report-swot-box ul li {
+        font-size: 11px;
+        padding: 2px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .report-swot-box ul li:last-child {
+        border-bottom: none;
+      }
+      @media (max-width: 768px) {
+        .report-summary-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .report-swot-grid {
+          grid-template-columns: 1fr;
+        }
+        .report-signature {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+      }
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== TOAST ===== -->
+    <div id="toastContainer"></div>
+
+    <!-- ===== CONFIRM MODAL ===== -->
+    <div class="confirm-overlay" id="confirmModal">
+      <div class="confirm-box">
+        <div class="confirm-icon" id="confirmIcon">⚠️</div>
+        <h3 id="confirmTitle">Konfirmasi</h3>
+        <p id="confirmMessage">Yakin ingin melanjutkan?</p>
+        <div class="confirm-actions">
+          <button class="btn-confirm-no" id="confirmNo">Batal</button>
+          <button class="btn-confirm-yes" id="confirmYes">Ya</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MODAL CRUD ===== -->
+    <div class="modal-overlay" id="crudModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 id="modalTitle">Tambah Data</h2>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+          <button class="btn-modal btn-modal-cancel" onclick="closeModal()">
+            Batal
+          </button>
+          <button class="btn-modal btn-modal-save" onclick="saveData()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="container">
+        <nav class="navbar">
+          <a href="dashboard-perangkat.html" class="brand">
+            <img src="assets/images/logo.png" alt="SIPEDES" />
+            <span>SIPEDES</span>
+            <small>Perangkat</small>
+          </a>
+          <div class="nav-menu">
+            <a href="dashboard-perangkat.html" class="active"
+              ><i class="fas fa-gauge-high"></i
+            ></a>
+            <a href="index.html"><i class="fas fa-home"></i></a>
+            <a href="logout.html" class="nav-logout"
+              ><i class="fas fa-sign-out-alt"></i
+            ></a>
+            <span class="role-badge" style="background: #0d47a1"
+              >Perangkat</span
+            >
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="dashboard-wrapper">
+      <div class="container">
+        <!-- HEADER -->
+        <div class="dashboard-header">
+          <div class="title">
+            <h1>
+              Dashboard <span style="color: #0d47a1">Perangkat Desa</span>
+            </h1>
+            <p>
+              Kelola data potensi, SWOT, program, dan strategi desa sesuai
+              kewenangan
+            </p>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+            "
+          >
+            <div class="user-info">
+              <div class="avatar" style="background: #0d47a1" id="userAvatar">
+                P
+              </div>
+              <div>
+                <div class="name" id="userName">Perangkat Desa</div>
+                <div class="role-text">Perangkat Desa</div>
+              </div>
+            </div>
+            <button
+              class="btn-logout"
+              onclick="window.location.href = 'logout.html'"
+            >
+              <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <div class="stat-number" id="statPotensi">0</div>
+            <div class="stat-label">Potensi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd; color: #0d47a1">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="stat-number" id="statFaktor">0</div>
+            <div class="stat-label">Faktor SWOT</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0; color: #e65100">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="stat-number" id="statStrategi">0</div>
+            <div class="stat-label">Strategi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5; color: #6a1b9a">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-number" id="statProgram">0</div>
+            <div class="stat-label">Program</div>
+          </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="dashboard-grid">
+          <!-- KIRI -->
+          <div>
+            <!-- APBDES CHART -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-chart-bar"></i> APBDes</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(View Only)</span
+                >
+              </div>
+              <div class="card-body">
+                <div
+                  id="apbdesSummary"
+                  style="
+                    margin-bottom: 12px;
+                    font-size: 13px;
+                    color: var(--text-light);
+                    text-align: center;
+                  "
+                ></div>
+                <div class="chart-container">
+                  <canvas id="apbdesChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- MANAJEMEN DATA -->
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-database"></i> Kelola Data</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(CRUD)</span
+                >
+              </div>
+              <div class="card-body">
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <button class="btn-add-row" onclick="openAddModal('potensi')">
+                    <i class="fas fa-plus"></i> Tambah Potensi
+                  </button>
+                  <button
+                    class="btn-add-row"
+                    onclick="openAddModal('strategi')"
+                    style="background: #0d47a1"
+                  >
+                    <i class="fas fa-plus"></i> Tambah Strategi
+                  </button>
+                  <button
+                    class="btn-add-row"
+                    onclick="openAddModal('program')"
+                    style="background: #e65100"
+                  >
+                    <i class="fas fa-plus"></i> Tambah Program
+                  </button>
+                  <button
+                    class="btn-add-row"
+                    onclick="openAddModal('swot')"
+                    style="background: #6a1b9a"
+                  >
+                    <i class="fas fa-plus"></i> Tambah SWOT
+                  </button>
+                </div>
+                <div class="search-bar">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Cari data..."
+                    onkeyup="searchData()"
+                  />
+                </div>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Jenis</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KANAN -->
+          <div>
+            <!-- EXPORT -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Ekspor Laporan</h3>
+                <span style="font-size: 11px; color: var(--text-muted)"
+                  >(PDF Profesional)</span
+                >
+              </div>
+              <div class="card-body">
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <button
+                    class="btn-export btn-export-pdf"
+                    onclick="exportProfessionalPDF()"
+                  >
+                    <i class="fas fa-file-pdf"></i> PDF Laporan
+                  </button>
+                  <button
+                    class="btn-export btn-export-excel"
+                    onclick="exportToExcel()"
+                  >
+                    <i class="fas fa-file-excel"></i> Excel
+                  </button>
+                  <button
+                    class="btn-export btn-export-print"
+                    onclick="window.print()"
+                  >
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+                <div
+                  style="
+                    font-size: 11px;
+                    color: var(--text-muted);
+                    background: #f8f6f0;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                  "
+                >
+                  <i class="fas fa-info-circle"></i> Laporan PDF profesional
+                  dengan kop surat, tabel data, dan tanda tangan
+                </div>
+              </div>
+            </div>
+
+            <!-- MENU PERANGKAT -->
+            <div class="card" style="margin-bottom: 20px">
+              <div class="card-header">
+                <h3><i class="fas fa-cog"></i> Menu Perangkat</h3>
+              </div>
+              <div class="card-body">
+                <div class="menu-grid">
+                  <a
+                    href="index.html#potensi"
+                    class="menu-item input-item"
+                    onclick="showToast('Membuka Potensi...', 'info')"
+                  >
+                    <i class="fas fa-seedling"></i><span>Input Potensi</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#swot"
+                    class="menu-item input-item"
+                    onclick="showToast('Membuka SWOT...', 'info')"
+                  >
+                    <i class="fas fa-chart-pie"></i><span>Input SWOT</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#strategi"
+                    class="menu-item input-item"
+                    onclick="showToast('Membuka Strategi...', 'info')"
+                  >
+                    <i class="fas fa-bullseye"></i><span>Input Strategi</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#program"
+                    class="menu-item input-item"
+                    onclick="showToast('Membuka Program...', 'info')"
+                  >
+                    <i class="fas fa-tasks"></i><span>Input Program</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                  <a
+                    href="index.html#profil"
+                    class="menu-item"
+                    style="grid-column: 1/-1"
+                    onclick="showToast('Membuka Profil Desa...', 'info')"
+                  >
+                    <i class="fas fa-info-circle"></i><span>Profil Desa</span>
+                    <span class="arrow"
+                      ><i class="fas fa-chevron-right"></i
+                    ></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- AKTIVITAS -->
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Aktivitas</h3>
+              </div>
+              <div class="card-body">
+                <div id="activityContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/crud.js"></script>
+    <script src="js/export.js"></script>
+    <script>
+      // ============================================================
+      // CONFIRM MODAL
+      // ============================================================
+      var confirmCallback = null;
+
+      function showConfirm(message, callback, icon, title) {
+        icon = icon || "warning";
+        title = title || "Konfirmasi";
+        var overlay = document.getElementById("confirmModal");
+        var iconEl = document.getElementById("confirmIcon");
+        var titleEl = document.getElementById("confirmTitle");
+        var msgEl = document.getElementById("confirmMessage");
+        var yesBtn = document.getElementById("confirmYes");
+        var noBtn = document.getElementById("confirmNo");
+
+        var iconMap = {
+          warning: "⚠️",
+          danger: "🔴",
+          success: "✅",
+          info: "ℹ️",
+        };
+        iconEl.textContent = iconMap[icon] || "⚠️";
+        iconEl.className = "confirm-icon " + icon;
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+        confirmCallback = callback;
+
+        yesBtn.onclick = function () {
+          overlay.classList.remove("active");
+          document.body.style.overflow = "auto";
+          if (confirmCallback) confirmCallback(true);
+          confirmCallback = null;
+        };
+        noBtn.onclick = function () {
+          overlay.classList.remove("active");
+          document.body.style.overflow = "auto";
+          if (confirmCallback) confirmCallback(false);
+          confirmCallback = null;
+        };
+        overlay.onclick = function (e) {
+          if (e.target === overlay) {
+            overlay.classList.remove("active");
+            document.body.style.overflow = "auto";
+            if (confirmCallback) confirmCallback(false);
+            confirmCallback = null;
+          }
+        };
+      }
+
+      // ============================================================
+      // TOAST
+      // ============================================================
+      function showToast(message, type, duration) {
+        type = type || "info";
+        duration = duration || 3500;
+        var container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        var colors = {
+          success: {
+            bg: "linear-gradient(135deg, #2e7d32, #1b5e20)",
+            icon: "fa-check-circle",
+          },
+          error: {
+            bg: "linear-gradient(135deg, #c62828, #b71c1c)",
+            icon: "fa-exclamation-circle",
+          },
+          warning: {
+            bg: "linear-gradient(135deg, #e65100, #bf360c)",
+            icon: "fa-triangle-exclamation",
+          },
+          info: {
+            bg: "linear-gradient(135deg, #0d47a1, #0a3a7a)",
+            icon: "fa-info-circle",
+          },
+        };
+
+        var color = colors[type] || colors.info;
+        var notif = document.createElement("div");
+        notif.className = "toast " + type;
+        notif.style.background = color.bg;
+        notif.innerHTML =
+          '<i class="fas ' +
+          color.icon +
+          '"></i><span class="toast-content">' +
+          message +
+          '</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+        container.appendChild(notif);
+
+        setTimeout(function () {
+          notif.classList.add("hide");
+          setTimeout(function () {
+            notif.remove();
+          }, 500);
+        }, duration);
+      }
+
+      // ============================================================
+      // LOCAL STORAGE KEYS
+      // ============================================================
+      var KEYS = {
+        potensi: "sipedes_potensi",
+        strategi: "sipedes_strategi",
+        program: "sipedes_program",
+        swot: "sipedes_swot",
+        apbdes: "sipedes_apbdes",
+        aktivitas: "sipedes_aktivitas",
+      };
+
+      function getData(key, defaultData) {
+        var stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            var parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (!Array.isArray(parsed) && parsed !== null) return parsed;
+          } catch (e) {}
+        }
+        localStorage.setItem(key, JSON.stringify(defaultData));
+        return defaultData;
+      }
+
+      function saveDataToStorage(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+        return true;
+      }
+
+      // ============================================================
+      // DEFAULT DATA
+      // ============================================================
+      var DEFAULT_DATA = {
+        potensi: [
+          { id: 1, nama: "Sektor Pertanian" },
+          { id: 2, nama: "Peternakan" },
+          { id: 3, nama: "Jahit/Bordir" },
+          { id: 4, nama: "Pengolahan Kayu" },
+          { id: 5, nama: "BUMDes" },
+          { id: 6, nama: "Lembaga Keuangan" },
+          { id: 7, nama: "Lembaga Pendidikan" },
+          { id: 8, nama: "Situs Sejarah" },
+        ],
+        strategi: [
+          {
+            id: 1,
+            nama: "Pengembangan Pertanian Modern dan Diversifikasi Komoditas",
+            tipe: "SO",
+          },
+          {
+            id: 2,
+            nama: "Penguatan BUMDes sebagai Motor Penggerak Ekonomi Desa",
+            tipe: "SO",
+          },
+          {
+            id: 3,
+            nama: "Pengembangan UMKM Berbasis Teknologi Digital",
+            tipe: "WO",
+          },
+          {
+            id: 4,
+            nama: "Peningkatan Kualitas Sumber Daya Manusia",
+            tipe: "WO",
+          },
+          {
+            id: 5,
+            nama: "Diversifikasi Ekonomi dan Mitigasi Risiko",
+            tipe: "ST",
+          },
+          {
+            id: 6,
+            nama: "Penguatan Kelembagaan dan Partisipasi Masyarakat",
+            tipe: "WT",
+          },
+        ],
+        program: [
+          { id: 1, nama: "Pengembangan Pertanian Modern", status: "Berjalan" },
+          { id: 2, nama: "Penguatan BUMDes", status: "Berjalan" },
+          { id: 3, nama: "Digitalisasi UMKM", status: "Berjalan" },
+          {
+            id: 4,
+            nama: "Program Beasiswa dan Pelatihan SDM",
+            status: "Berjalan",
+          },
+          {
+            id: 5,
+            nama: "Diversifikasi Komoditas Pertanian",
+            status: "Perencanaan",
+          },
+          { id: 6, nama: "Mitigasi Banjir dan Irigasi", status: "Perencanaan" },
+          { id: 7, nama: "Penguatan BPD dan LKMD", status: "Perencanaan" },
+          { id: 8, nama: "Pembentukan Koperasi Desa", status: "Perencanaan" },
+        ],
+        apbdes: [
+          {
+            id: 1,
+            tahun: 2024,
+            pendapatan: { total: 2155218000 },
+            belanja: { total: 2193650344 },
+            defisit: -38432344,
+          },
+          {
+            id: 2,
+            tahun: 2025,
+            pendapatan: { total: 2123726000 },
+            belanja: { total: 2186961683 },
+            defisit: -63235683,
+          },
+        ],
+      };
+
+      function initDefaultData() {
+        ["potensi", "strategi", "program", "apbdes"].forEach(function (key) {
+          if (!localStorage.getItem(KEYS[key])) {
+            localStorage.setItem(KEYS[key], JSON.stringify(DEFAULT_DATA[key]));
+          }
+        });
+        if (!localStorage.getItem(KEYS.aktivitas)) {
+          localStorage.setItem(
+            KEYS.aktivitas,
+            JSON.stringify([
+              {
+                text: "Sistem SIPEDES <strong>diaktifkan</strong>",
+                time: "Baru saja",
+                type: "success",
+                icon: "fa-check",
+              },
+            ]),
+          );
+        }
+      }
+
+      // ============================================================
+      // LOAD FUNCTIONS
+      // ============================================================
+      function loadStats() {
+        var p = getData(KEYS.potensi, DEFAULT_DATA.potensi);
+        var s = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+        var pr = getData(KEYS.program, DEFAULT_DATA.program);
+        var sw = CRUD.getLocalData("swot");
+
+        var totalFaktor = 0;
+        if (sw && sw.faktor) {
+          ["kekuatan", "kelemahan", "peluang", "ancaman"].forEach(
+            function (kat) {
+              totalFaktor += (sw.faktor[kat] || []).length;
+            },
+          );
+        }
+
+        document.getElementById("statPotensi").textContent = p.length;
+        document.getElementById("statFaktor").textContent = totalFaktor;
+        document.getElementById("statStrategi").textContent = s.length;
+        document.getElementById("statProgram").textContent = pr.length;
+      }
+
+      var allData = [];
+
+      function searchData() {
+        var keyword =
+          document.getElementById("searchInput")?.value.toLowerCase().trim() ||
+          "";
+        var tbody = document.getElementById("tableBody");
+        if (!tbody) return;
+
+        var p = getData(KEYS.potensi, DEFAULT_DATA.potensi);
+        var s = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+        var pr = getData(KEYS.program, DEFAULT_DATA.program);
+        var sw = CRUD.getLocalData("swot");
+
+        allData = [];
+        p.forEach(function (item) {
+          allData.push({ id: item.id, nama: item.nama, jenis: "Potensi" });
+        });
+        s.forEach(function (item) {
+          allData.push({ id: item.id, nama: item.nama, jenis: "Strategi" });
+        });
+        pr.forEach(function (item) {
+          allData.push({ id: item.id, nama: item.nama, jenis: "Program" });
+        });
+        if (sw && sw.faktor) {
+          ["kekuatan", "kelemahan", "peluang", "ancaman"].forEach(
+            function (kat) {
+              (sw.faktor[kat] || []).forEach(function (item) {
+                allData.push({
+                  id: item.id,
+                  nama: item.nama,
+                  jenis: "SWOT-" + kat,
+                });
+              });
+            },
+          );
+        }
+
+        var filtered = allData;
+        if (keyword) {
+          filtered = allData.filter(function (item) {
+            return (
+              (item.nama || "").toLowerCase().includes(keyword) ||
+              (item.id || "").toString().includes(keyword) ||
+              (item.jenis || "").toLowerCase().includes(keyword)
+            );
+          });
+        }
+
+        if (filtered.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada data ditemukan.</td></tr>';
+          return;
+        }
+
+        var colorMap = {
+          Potensi: "#e8f5e9",
+          Strategi: "#e3f2fd",
+          Program: "#fff3e0",
+          "SWOT-kekuatan": "#e8f5e9",
+          "SWOT-kelemahan": "#ffebee",
+          "SWOT-peluang": "#e3f2fd",
+          "SWOT-ancaman": "#fff3e0",
+        };
+
+        var html = "";
+        for (var i = 0; i < filtered.length && i < 20; i++) {
+          var item = filtered[i];
+          html +=
+            "<tr><td>" +
+            (item.id || "-") +
+            "</td><td>" +
+            (item.nama || item.tahun || "Data") +
+            '</td><td><span style="background:' +
+            (colorMap[item.jenis] || "#f0f0f0") +
+            ';padding:2px 10px;border-radius:12px;font-size:11px;">' +
+            item.jenis +
+            '</span></td><td><button class="btn-action btn-edit" onclick="editData(\'' +
+            item.jenis +
+            "', '" +
+            item.id +
+            '\')"><i class="fas fa-edit"></i></button><button class="btn-action btn-delete" onclick="deleteData(\'' +
+            item.jenis +
+            "', '" +
+            item.id +
+            '\')"><i class="fas fa-trash"></i></button></td></tr>';
+        }
+        tbody.innerHTML = html;
+      }
+
+      function loadChart() {
+        var data = getData(KEYS.apbdes, DEFAULT_DATA.apbdes);
+        var labels = data.map(function (item) {
+          return item.tahun || "";
+        });
+        var p = data.map(function (item) {
+          return (item.pendapatan?.total || 0) / 1000000;
+        });
+        var b = data.map(function (item) {
+          return (item.belanja?.total || 0) / 1000000;
+        });
+        var cl = labels.length > 0 ? labels : ["2024", "2025"];
+        var cp = p.length > 0 ? p : [2155, 2124];
+        var cb = b.length > 0 ? b : [2194, 2187];
+        var ctx = document.getElementById("apbdesChart")?.getContext("2d");
+        if (!ctx) return;
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: cl,
+            datasets: [
+              {
+                label: "Pendapatan (Rp Juta)",
+                data: cp,
+                backgroundColor: "rgba(13,71,161,0.8)",
+                borderColor: "#0d47a1",
+                borderWidth: 2,
+                borderRadius: 4,
+              },
+              {
+                label: "Belanja (Rp Juta)",
+                data: cb,
+                backgroundColor: "rgba(201,149,107,0.8)",
+                borderColor: "#c9956b",
+                borderWidth: 2,
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  usePointStyle: true,
+                  font: { family: "Inter", size: 10 },
+                  padding: 12,
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (v) {
+                    return "Rp" + v.toLocaleString();
+                  },
+                  font: { family: "Inter", size: 9 },
+                },
+                grid: { color: "rgba(0,0,0,0.05)" },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { font: { family: "Inter", size: 11, weight: "600" } },
+              },
+            },
+          },
+        });
+
+        var summary = document.getElementById("apbdesSummary");
+        var last = data[data.length - 1];
+        if (last) {
+          var def =
+            last.defisit || last.pendapatan?.total - last.belanja?.total;
+          var warna = def < 0 ? "#c62828" : "#2e7d32";
+          summary.innerHTML =
+            "<strong>" +
+            last.tahun +
+            "</strong> · Pendapatan: <strong>Rp" +
+            (last.pendapatan?.total || 0).toLocaleString() +
+            "</strong> · Belanja: <strong>Rp" +
+            (last.belanja?.total || 0).toLocaleString() +
+            '</strong> · Defisit: <strong style="color:' +
+            warna +
+            ';">' +
+            (def < 0 ? "-" : "") +
+            "Rp" +
+            Math.abs(def).toLocaleString() +
+            "</strong>";
+        }
+      }
+
+      function loadActivity() {
+        var c = document.getElementById("activityContainer");
+        if (!c) return;
+        var data = getData(KEYS.aktivitas, []);
+        if (data.length === 0) {
+          data = [
+            {
+              text: "Sistem SIPEDES <strong>diaktifkan</strong>",
+              time: "Baru saja",
+              type: "success",
+              icon: "fa-check",
+            },
+          ];
+          saveDataToStorage(KEYS.aktivitas, data);
+        }
+        var latest = data.slice(-5).reverse();
+        var colorMap = {
+          success: "green",
+          warning: "orange",
+          info: "blue",
+          error: "red",
+        };
+        var html = "";
+        for (var i = 0; i < latest.length; i++) {
+          var act = latest[i];
+          html +=
+            '<div class="activity-item"><div class="icon ' +
+            (colorMap[act.type] || "blue") +
+            '"><i class="fas ' +
+            (act.icon || "fa-check") +
+            '"></i></div><div class="content"><div class="text">' +
+            act.text +
+            '</div><div class="time">' +
+            act.time +
+            "</div></div></div>";
+        }
+        c.innerHTML = html;
+      }
+
+      function addActivity(text, type, icon) {
+        type = type || "info";
+        icon = icon || "fa-check";
+        var data = getData(KEYS.aktivitas, []);
+        var now = new Date();
+        var time = now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        data.push({ text: text, time: time, type: type, icon: icon });
+        saveDataToStorage(KEYS.aktivitas, data);
+        loadActivity();
+      }
+
+      // ============================================================
+      // EXPORT PROFESSIONAL PDF
+      // ============================================================
+      function exportProfessionalPDF() {
+        showToast("Menyiapkan laporan PDF profesional...", "info");
+
+        var potensi = getData(KEYS.potensi, DEFAULT_DATA.potensi);
+        var strategi = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+        var program = getData(KEYS.program, DEFAULT_DATA.program);
+        var apbdes = getData(KEYS.apbdes, DEFAULT_DATA.apbdes);
+        var swot = CRUD.getLocalData("swot");
+        var desa = CRUD.getLocalData("desa");
+
+        var now = new Date();
+        var tanggal = now.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+        var namaUser = localStorage.getItem("sipedes_user")
+          ? JSON.parse(localStorage.getItem("sipedes_user")).nama
+          : "Perangkat Desa";
+
+        var reportHTML = `
+      <div class="report-container" id="reportContent">
+        <div class="report-header">
+          <h1>PEMERINTAH DESA SLEMAN</h1>
+          <h2>Kecamatan Sliyeg · Kabupaten Indramayu</h2>
+          <p>Jl. Raya Sliyeg No. 123, Kecamatan Sliyeg, Kabupaten Indramayu</p>
+          <p style="font-size:11px;color:#999;">Email: desasleman@indramayu.go.id</p>
+          <hr style="border:1px solid #0d47a1;margin:8px 0;">
+          <p style="font-size:13px;font-weight:600;color:#0d47a1;">LAPORAN SISTEM INFORMASI POTENSI DESA (SIPEDES)</p>
+          <p style="font-size:12px;">Periode: ${tanggal}</p>
+        </div>
+
+        <div class="report-meta">
+          <span><strong>Dicetak oleh:</strong> ${namaUser}</span>
+          <span><strong>Tanggal:</strong> ${tanggal}</span>
+          <span><strong>Status:</strong> Laporan Perangkat Desa</span>
+        </div>
+
+        <div class="report-title">LAPORAN DATA DESA SLEMAN</div>
+
+        <div class="report-summary-grid">
+          <div class="report-summary-item">
+            <div class="number">${desa && desa.demografi ? desa.demografi.total_penduduk.toLocaleString() : "4.975"}</div>
+            <div class="label">Total Penduduk</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${potensi.length}</div>
+            <div class="label">Jenis Potensi</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${strategi.length}</div>
+            <div class="label">Strategi</div>
+          </div>
+          <div class="report-summary-item">
+            <div class="number">${program.length}</div>
+            <div class="label">Program</div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h4>A. PROFIL DESA SLEMAN</h4>
+          <table class="report-table">
+            <tr><td style="width:40%;font-weight:600;">Nama Desa</td><td>${desa && desa.identitas ? desa.identitas.nama_desa : "Sleman"}</td></tr>
+            <tr><td style="font-weight:600;">Kecamatan</td><td>${desa && desa.identitas ? desa.identitas.kecamatan : "Sliyeg"}</td></tr>
+            <tr><td style="font-weight:600;">Kabupaten</td><td>${desa && desa.identitas ? desa.identitas.kabupaten : "Indramayu"}</td></tr>
+            <tr><td style="font-weight:600;">Kepala Desa</td><td>${desa && desa.identitas ? desa.identitas.kepala_desa : "Abdul Goni"}</td></tr>
+            <tr><td style="font-weight:600;">Luas Wilayah</td><td>${desa && desa.identitas ? desa.identitas.luas_wilayah : "547,35"} Ha</td></tr>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>B. POTENSI EKONOMI DESA</h4>
+          <table class="report-table">
+            <thead><tr><th>No</th><th>Nama Potensi</th></tr></thead>
+            <tbody>`;
+        for (var i = 0; i < potensi.length; i++) {
+          reportHTML += `<tr><td>${i + 1}</td><td>${potensi[i].nama}</td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>C. ANGGARAN PENDAPATAN DAN BELANJA DESA (APBDes)</h4>
+          <table class="report-table">
+            <thead><tr><th>Tahun</th><th style="text-align:right;">Pendapatan</th><th style="text-align:right;">Belanja</th><th style="text-align:right;">Defisit/Surplus</th></tr></thead>
+            <tbody>`;
+        for (var i = 0; i < apbdes.length; i++) {
+          var item = apbdes[i];
+          var def =
+            item.defisit || item.pendapatan?.total - item.belanja?.total;
+          reportHTML += `<tr><td><strong>${item.tahun}</strong></td><td style="text-align:right;">Rp${(item.pendapatan?.total || 0).toLocaleString()}</td><td style="text-align:right;">Rp${(item.belanja?.total || 0).toLocaleString()}</td><td style="text-align:right;color:${def < 0 ? "#c62828" : "#2e7d32"};">${def < 0 ? "-" : ""}Rp${Math.abs(def).toLocaleString()}</td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>D. STRATEGI PENGEMBANGAN</h4>
+          <table class="report-table">
+            <thead><tr><th>No</th><th>Nama Strategi</th><th>Tipe</th></tr></thead>
+            <tbody>`;
+        var tipeLabel = {
+          SO: "Agresif",
+          WO: "Turnaround",
+          ST: "Diversifikasi",
+          WT: "Defensif",
+        };
+        for (var i = 0; i < strategi.length; i++) {
+          reportHTML += `<tr><td>${i + 1}</td><td>${strategi[i].nama}</td><td>${tipeLabel[strategi[i].tipe] || strategi[i].tipe}</td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>E. PROGRAM PENGEMBANGAN</h4>
+          <table class="report-table">
+            <thead><tr><th>No</th><th>Nama Program</th><th>Status</th></tr></thead>
+            <tbody>`;
+        for (var i = 0; i < program.length; i++) {
+          var p = program[i];
+          var statusColor =
+            p.status === "Berjalan"
+              ? "berjalan"
+              : p.status === "Perencanaan"
+                ? "perencanaan"
+                : "selesai";
+          reportHTML += `<tr><td>${i + 1}</td><td>${p.nama}</td><td><span class="badge-status ${statusColor}">${p.status || "Perencanaan"}</span></td></tr>`;
+        }
+        reportHTML += `
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-section">
+          <h4>F. ANALISIS SWOT</h4>
+          <div class="report-swot-grid">
+            <div class="report-swot-box" style="border-color:#2e7d32;background:#e8f5e9;">
+              <h5 style="color:#2e7d32;">KEKUATAN (S)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.kekuatan) {
+          for (var i = 0; i < swot.faktor.kekuatan.length; i++) {
+            reportHTML += `<li>${swot.faktor.kekuatan[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#c62828;background:#ffebee;">
+              <h5 style="color:#c62828;">KELEMAHAN (W)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.kelemahan) {
+          for (var i = 0; i < swot.faktor.kelemahan.length; i++) {
+            reportHTML += `<li>${swot.faktor.kelemahan[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#0d47a1;background:#e3f2fd;">
+              <h5 style="color:#0d47a1;">PELUANG (O)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.peluang) {
+          for (var i = 0; i < swot.faktor.peluang.length; i++) {
+            reportHTML += `<li>${swot.faktor.peluang[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+            <div class="report-swot-box" style="border-color:#e65100;background:#fff3e0;">
+              <h5 style="color:#e65100;">ANCAMAN (T)</h5>
+              <ul>`;
+        if (swot && swot.faktor && swot.faktor.ancaman) {
+          for (var i = 0; i < swot.faktor.ancaman.length; i++) {
+            reportHTML += `<li>${swot.faktor.ancaman[i].nama}</li>`;
+          }
+        }
+        reportHTML += `
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h4>G. HASIL ANALISIS SWOT</h4>
+          <table class="report-table">
+            <thead><tr><th>Komponen</th><th>Nilai</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Posisi Kuadran</strong></td><td style="font-weight:700;color:#2e7d32;">Kuadran ${swot && swot.hasil ? swot.hasil.kuadran : "I"} (${swot && swot.hasil ? swot.hasil.strategi : "Agresif SO"})</td></tr>
+              <tr><td><strong>Strategi</strong></td><td style="font-weight:700;color:#2e7d32;">${swot && swot.hasil ? swot.hasil.deskripsi : "Memanfaatkan kekuatan untuk merebut peluang"}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-signature">
+          <div class="signature-box">
+            <div class="line"></div>
+            <div class="label">Kepala Desa Sleman</div>
+            <div style="font-weight:600;margin-top:4px;">${desa && desa.identitas ? desa.identitas.kepala_desa : "Abdul Goni"}</div>
+          </div>
+          <div class="signature-box">
+            <div class="line"></div>
+            <div class="label">Perangkat Desa</div>
+            <div style="font-weight:600;margin-top:4px;">${namaUser}</div>
+          </div>
+        </div>
+
+        <div class="report-footer">
+          <p>Laporan ini dibuat secara otomatis oleh Sistem Informasi Potensi Desa (SIPEDES)</p>
+          <p>Desa Sleman, Kecamatan Sliyeg, Kabupaten Indramayu</p>
+          <p>&copy; ${new Date().getFullYear()} SIPEDES - All Rights Reserved</p>
+        </div>
+      </div>
+      `;
+
+        var wrapper = document.createElement("div");
+        wrapper.innerHTML = reportHTML;
+        var style = document.createElement("style");
+        style.textContent = `
+        .report-container { padding: 30px; background: #fff; font-family: 'Inter', sans-serif; max-width: 1000px; margin: 0 auto; }
+        .report-header { text-align: center; border-bottom: 3px solid #0d47a1; padding-bottom: 15px; margin-bottom: 20px; }
+        .report-header h1 { font-size: 24px; font-weight: 800; color: #0d47a1; margin: 0; }
+        .report-header h2 { font-size: 16px; font-weight: 600; color: #4a5a62; margin: 4px 0; }
+        .report-header p { font-size: 12px; color: #7a8a92; margin: 2px 0; }
+        .report-title { text-align: center; font-size: 18px; font-weight: 700; color: #0d47a1; margin: 16px 0 20px; padding: 8px; background: #e3f2fd; border-radius: 6px; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+        .report-table th { background: #0d47a1; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+        .report-table td { padding: 6px 10px; border-bottom: 1px solid #e0e3d8; }
+        .report-table tr:hover td { background: #f7f5f0; }
+        .report-footer { text-align: center; border-top: 1px solid #e0e3d8; padding-top: 12px; margin-top: 20px; font-size: 11px; color: #7a8a92; }
+        .report-signature { display: flex; justify-content: flex-end; gap: 60px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e3d8; }
+        .report-signature .signature-box { text-align: center; min-width: 180px; }
+        .report-signature .signature-box .line { border-bottom: 1px solid #1e2a2f; width: 180px; margin: 30px auto 4px; }
+        .report-signature .signature-box .label { font-size: 11px; color: #7a8a92; }
+        .report-meta { display: flex; justify-content: space-between; font-size: 12px; color: #7a8a92; margin-bottom: 12px; padding: 8px 12px; background: #f7f5f0; border-radius: 6px; }
+        .badge-status { display: inline-block; padding: 1px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .badge-status.berjalan { background: #e8f5e9; color: #2e7d32; }
+        .badge-status.perencanaan { background: #fff3e0; color: #e65100; }
+        .badge-status.selesai { background: #e3f2fd; color: #0d47a1; }
+        .report-section { margin: 16px 0; }
+        .report-section h4 { font-size: 14px; font-weight: 700; color: #0d47a1; margin: 12px 0 8px; padding: 4px 10px; background: #f0f0f0; border-left: 4px solid #0d47a1; }
+        .report-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+        .report-summary-item { background: #f7f5f0; padding: 10px; border-radius: 6px; text-align: center; }
+        .report-summary-item .number { font-size: 22px; font-weight: 800; color: #0d47a1; }
+        .report-summary-item .label { font-size: 11px; color: #7a8a92; }
+        .report-swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+        .report-swot-box { padding: 12px; border-radius: 6px; border-left: 4px solid; }
+        .report-swot-box h5 { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+        .report-swot-box ul { list-style: none; padding: 0; }
+        .report-swot-box ul li { font-size: 11px; padding: 2px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .report-swot-box ul li:last-child { border-bottom: none; }
+        @media (max-width: 768px) {
+          .report-summary-grid { grid-template-columns: 1fr 1fr; }
+          .report-swot-grid { grid-template-columns: 1fr; }
+          .report-signature { flex-direction: column; align-items: center; gap: 20px; }
+        }
+        @media print { .no-print { display: none !important; } }
+      `;
+        wrapper.appendChild(style);
+        document.body.appendChild(wrapper);
+
+        var reportElement = wrapper.querySelector(".report-container");
+
+        html2canvas(reportElement, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          width: 1000,
+          windowWidth: 1000,
+        })
+          .then(function (canvas) {
+            var imgData = canvas.toDataURL("image/png");
+            var pdf = new jspdf.jsPDF("p", "mm", "a4");
+            var imgWidth = 210;
+            var imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+            var pageHeight = 297;
+            var heightLeft = imgHeight - pageHeight;
+            var position = 0;
+
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+            }
+
+            pdf.save(
+              "Laporan_SIPEDES_Perangkat_" +
+                now.toISOString().slice(0, 10) +
+                ".pdf",
+            );
+            wrapper.remove();
+            showToast("Laporan PDF profesional berhasil diekspor!", "success");
+            addActivity(
+              "Laporan PDF profesional diekspor",
+              "success",
+              "fa-file-pdf",
+            );
+          })
+          .catch(function (err) {
+            showToast("Gagal export PDF: " + err.message, "error");
+            wrapper.remove();
+          });
+      }
+
+      // ============================================================
+      // EXPORT EXCEL
+      // ============================================================
+      function exportToExcel() {
+        showToast("Menyiapkan Excel...", "info");
+        setTimeout(function () {
+          try {
+            var workbook = XLSX.utils.book_new();
+
+            var p = getData(KEYS.potensi, DEFAULT_DATA.potensi);
+            var s = getData(KEYS.strategi, DEFAULT_DATA.strategi);
+            var pr = getData(KEYS.program, DEFAULT_DATA.program);
+            var sw = CRUD.getLocalData("swot");
+
+            // Potensi
+            var potensiData = [["ID", "Nama Potensi"]];
+            for (var i = 0; i < p.length; i++) {
+              potensiData.push([p[i].id, p[i].nama]);
+            }
+            var ws1 = XLSX.utils.aoa_to_sheet(potensiData);
+            XLSX.utils.book_append_sheet(workbook, ws1, "Potensi");
+
+            // Strategi
+            var strategiData = [["ID", "Nama Strategi", "Tipe"]];
+            for (var i = 0; i < s.length; i++) {
+              strategiData.push([s[i].id, s[i].nama, s[i].tipe]);
+            }
+            var ws2 = XLSX.utils.aoa_to_sheet(strategiData);
+            XLSX.utils.book_append_sheet(workbook, ws2, "Strategi");
+
+            // Program
+            var programData = [["ID", "Nama Program", "Status"]];
+            for (var i = 0; i < pr.length; i++) {
+              programData.push([pr[i].id, pr[i].nama, pr[i].status]);
+            }
+            var ws3 = XLSX.utils.aoa_to_sheet(programData);
+            XLSX.utils.book_append_sheet(workbook, ws3, "Program");
+
+            // SWOT
+            if (sw && sw.faktor) {
+              var swotData = [
+                ["Kategori", "ID", "Nama", "Bobot", "Rating", "Skor"],
+              ];
+              ["kekuatan", "kelemahan", "peluang", "ancaman"].forEach(
+                function (kat) {
+                  (sw.faktor[kat] || []).forEach(function (f) {
+                    swotData.push([
+                      kat,
+                      f.id,
+                      f.nama,
+                      f.bobot,
+                      f.rating,
+                      (f.bobot * f.rating).toFixed(2),
+                    ]);
+                  });
+                },
+              );
+              var ws4 = XLSX.utils.aoa_to_sheet(swotData);
+              XLSX.utils.book_append_sheet(workbook, ws4, "SWOT");
+            }
+
+            XLSX.writeFile(workbook, "Laporan_SIPEDES_Perangkat.xlsx");
+            showToast("Excel berhasil diekspor!", "success");
+            addActivity("Laporan Excel diekspor", "success", "fa-file-excel");
+          } catch (e) {
+            showToast("Gagal export Excel: " + e.message, "error");
+          }
+        }, 500);
+      }
+
+      // ============================================================
+      // MODAL CRUD FUNCTIONS
+      // ============================================================
+      var currentType = "";
+      var currentId = null;
+
+      function openModal(title, body) {
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalBody").innerHTML = body;
+        document.getElementById("crudModal").classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        document.getElementById("crudModal").classList.remove("active");
+        document.body.style.overflow = "auto";
+        currentType = "";
+        currentId = null;
+      }
+
+      document
+        .getElementById("crudModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      function openAddModal(type) {
+        currentType = type;
+        currentId = null;
+        var title = "Tambah Data";
+        var html = "";
+
+        switch (type) {
+          case "potensi":
+            title = "Tambah Potensi Desa";
+            html =
+              '<div class="form-group"><label>Nama Potensi</label><input type="text" id="inNama" placeholder="Contoh: Sektor Pertanian" /></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi" placeholder="Deskripsi potensi"></textarea></div><div class="form-group"><label>Icon</label><input type="text" id="inIcon" placeholder="fa-seedling" value="fa-seedling" /></div>';
+            break;
+          case "strategi":
+            title = "Tambah Strategi";
+            html =
+              '<div class="form-group"><label>Nama Strategi</label><input type="text" id="inNama" placeholder="Nama strategi" /></div><div class="form-group"><label>Tipe</label><select id="inTipe"><option value="SO">SO - Agresif</option><option value="WO">WO - Turnaround</option><option value="ST">ST - Diversifikasi</option><option value="WT">WT - Defensif</option></select></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi" placeholder="Deskripsi"></textarea></div><div class="form-group"><label>Sumber Dana</label><input type="text" id="inSumber" placeholder="Dana Desa, APBDes" /></div>';
+            break;
+          case "program":
+            title = "Tambah Program";
+            html =
+              '<div class="form-group"><label>Nama Program</label><input type="text" id="inNama" placeholder="Nama program" /></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi" placeholder="Deskripsi"></textarea></div><div class="form-group"><label>Sumber Dana</label><input type="text" id="inSumber" placeholder="Dana Desa, ADD" /></div><div class="form-group"><label>Status</label><select id="inStatus"><option value="Berjalan">Berjalan</option><option value="Perencanaan">Perencanaan</option><option value="Selesai">Selesai</option></select></div>';
+            break;
+          case "swot":
+            title = "Tambah Faktor SWOT";
+            html =
+              '<div class="form-group"><label>Kategori</label><select id="inKategori"><option value="kekuatan">Kekuatan</option><option value="kelemahan">Kelemahan</option><option value="peluang">Peluang</option><option value="ancaman">Ancaman</option></select></div><div class="form-group"><label>Nama Faktor</label><input type="text" id="inNama" placeholder="Nama faktor SWOT" /></div><div class="form-group"><label>Bobot (0-1)</label><input type="number" id="inBobot" step="0.01" min="0" max="1" placeholder="0.15" value="0.10" /></div><div class="form-group"><label>Rating (1-4)</label><select id="inRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></div>';
+            break;
+          default:
+            html = '<p style="color:red;">Jenis data tidak dikenal.</p>';
+        }
+        openModal(title, html);
+      }
+
+      function saveData() {
+        var type = currentType;
+        var id = currentId;
+        if (!type) {
+          showToast("Tidak ada data yang disimpan!", "error");
+          return;
+        }
+
+        var data = {};
+        var msg = "";
+        var key = "";
+
+        try {
+          switch (type) {
+            case "potensi":
+              key = KEYS.potensi;
+              var namaP = document.getElementById("inNama")?.value.trim();
+              if (!namaP) {
+                showToast("Nama potensi harus diisi!", "error");
+                return;
+              }
+              data = {
+                id: id || Date.now(),
+                nama: namaP,
+                deskripsi:
+                  document.getElementById("inDeskripsi")?.value.trim() ||
+                  "Potensi desa",
+                icon:
+                  document.getElementById("inIcon")?.value.trim() ||
+                  "fa-seedling",
+              };
+              msg =
+                "Potensi berhasil " + (id ? "diperbarui" : "ditambahkan") + "!";
+              break;
+            case "strategi":
+              key = KEYS.strategi;
+              var ns = document.getElementById("inNama")?.value.trim();
+              if (!ns) {
+                showToast("Nama strategi harus diisi!", "error");
+                return;
+              }
+              data = {
+                id: id || Date.now(),
+                nama: ns,
+                tipe: document.getElementById("inTipe")?.value || "SO",
+                deskripsi:
+                  document.getElementById("inDeskripsi")?.value.trim() ||
+                  "Strategi desa",
+                sumber_dana: [
+                  document.getElementById("inSumber")?.value.trim() ||
+                    "Dana Desa",
+                ],
+              };
+              msg =
+                "Strategi berhasil " +
+                (id ? "diperbarui" : "ditambahkan") +
+                "!";
+              break;
+            case "program":
+              key = KEYS.program;
+              var np = document.getElementById("inNama")?.value.trim();
+              if (!np) {
+                showToast("Nama program harus diisi!", "error");
+                return;
+              }
+              data = {
+                id: id || Date.now(),
+                nama: np,
+                deskripsi:
+                  document.getElementById("inDeskripsi")?.value.trim() ||
+                  "Program desa",
+                sumber_dana:
+                  document.getElementById("inSumber")?.value.trim() ||
+                  "Dana Desa",
+                status:
+                  document.getElementById("inStatus")?.value || "Perencanaan",
+              };
+              msg =
+                "Program berhasil " + (id ? "diperbarui" : "ditambahkan") + "!";
+              break;
+            case "swot":
+              key = KEYS.swot;
+              var kategori = document.getElementById("inKategori")?.value;
+              var namaF = document.getElementById("inNama")?.value.trim();
+              var bobot =
+                parseFloat(document.getElementById("inBobot")?.value) || 0;
+              var rating =
+                parseInt(document.getElementById("inRating")?.value) || 3;
+              if (!namaF) {
+                showToast("Nama faktor harus diisi!", "error");
+                return;
+              }
+              var swotData = CRUD.getLocalData("swot") || {
+                faktor: {},
+                hasil: {},
+              };
+              if (!swotData.faktor)
+                swotData.faktor = {
+                  kekuatan: [],
+                  kelemahan: [],
+                  peluang: [],
+                  ancaman: [],
+                };
+              if (!swotData.faktor[kategori]) swotData.faktor[kategori] = [];
+              var newId =
+                kategori.charAt(0).toUpperCase() +
+                (swotData.faktor[kategori].length + 1);
+              var newItem = {
+                id: newId,
+                nama: namaF,
+                bobot: bobot,
+                rating: rating,
+              };
+              if (id) {
+                var idx = swotData.faktor[kategori].findIndex(function (item) {
+                  return item.id === id;
+                });
+                if (idx !== -1)
+                  swotData.faktor[kategori][idx] = {
+                    ...swotData.faktor[kategori][idx],
+                    ...newItem,
+                  };
+                else swotData.faktor[kategori].push(newItem);
+              } else {
+                swotData.faktor[kategori].push(newItem);
+              }
+              CRUD.saveData("swot", swotData);
+              msg =
+                "Faktor SWOT berhasil " +
+                (id ? "diperbarui" : "ditambahkan") +
+                "!";
+              showToast(msg, "success");
+              addActivity(msg, "success", "fa-chart-pie");
+              loadStats();
+              searchData();
+              closeModal();
+              return;
+            default:
+              showToast("Jenis data tidak dikenal: " + type, "error");
+              return;
+          }
+
+          var existing = getData(key, []);
+          if (id) {
+            var idx = existing.findIndex(function (item) {
+              return item.id == id;
+            });
+            if (idx !== -1) existing[idx] = { ...existing[idx], ...data };
+            else existing.push(data);
+          } else {
+            existing.push(data);
+          }
+          saveDataToStorage(key, existing);
+
+          closeModal();
+          showToast(msg, "success");
+          addActivity(msg, "success", "fa-check");
+          loadStats();
+          searchData();
+        } catch (error) {
+          showToast("Terjadi kesalahan: " + error.message, "error");
+        }
+      }
+
+      function editData(type, id) {
+        var key = "";
+        var data = [];
+        var item = null;
+        var actualType = "";
+
+        if (type == "Potensi" || type == "potensi") {
+          key = KEYS.potensi;
+          data = getData(key, DEFAULT_DATA.potensi);
+          item = data.find(function (d) {
+            return d.id == id;
+          });
+          actualType = "potensi";
+        } else if (type == "Strategi" || type == "strategi") {
+          key = KEYS.strategi;
+          data = getData(key, DEFAULT_DATA.strategi);
+          item = data.find(function (d) {
+            return d.id == id;
+          });
+          actualType = "strategi";
+        } else if (type == "Program" || type == "program") {
+          key = KEYS.program;
+          data = getData(key, DEFAULT_DATA.program);
+          item = data.find(function (d) {
+            return d.id == id;
+          });
+          actualType = "program";
+        } else if (type && type.includes("SWOT")) {
+          var swotData = CRUD.getLocalData("swot") || { faktor: {} };
+          var kategoriMap = {
+            "SWOT-kekuatan": "kekuatan",
+            "SWOT-kelemahan": "kelemahan",
+            "SWOT-peluang": "peluang",
+            "SWOT-ancaman": "ancaman",
+          };
+          var kategori = kategoriMap[type] || "kekuatan";
+          var list = swotData.faktor?.[kategori] || [];
+          item = list.find(function (d) {
+            return d.id == id;
+          });
+          if (item) {
+            currentType = "swot";
+            currentId = id;
+            var html =
+              '<div class="form-group"><label>Kategori</label><select id="inKategori"><option value="kekuatan" ' +
+              (kategori === "kekuatan" ? "selected" : "") +
+              '>Kekuatan</option><option value="kelemahan" ' +
+              (kategori === "kelemahan" ? "selected" : "") +
+              '>Kelemahan</option><option value="peluang" ' +
+              (kategori === "peluang" ? "selected" : "") +
+              '>Peluang</option><option value="ancaman" ' +
+              (kategori === "ancaman" ? "selected" : "") +
+              '>Ancaman</option></select></div><div class="form-group"><label>Nama Faktor</label><input type="text" id="inNama" value="' +
+              (item.nama || "") +
+              '" /></div><div class="form-group"><label>Bobot (0-1)</label><input type="number" id="inBobot" step="0.01" min="0" max="1" value="' +
+              (item.bobot || 0) +
+              '" /></div><div class="form-group"><label>Rating (1-4)</label><select id="inRating"><option value="1" ' +
+              (item.rating === 1 ? "selected" : "") +
+              '>1</option><option value="2" ' +
+              (item.rating === 2 ? "selected" : "") +
+              '>2</option><option value="3" ' +
+              (item.rating === 3 ? "selected" : "") +
+              '>3</option><option value="4" ' +
+              (item.rating === 4 ? "selected" : "") +
+              ">4</option></select></div>";
+            openModal("Edit Faktor SWOT", html);
+            return;
+          }
+          showToast("Data SWOT tidak ditemukan!", "error");
+          return;
+        }
+
+        if (!item) {
+          showToast("Data tidak ditemukan!", "error");
+          return;
+        }
+
+        currentType = actualType;
+        currentId = id;
+        var title = "Edit Data";
+        var html = "";
+
+        switch (actualType) {
+          case "potensi":
+            title = "Edit Potensi";
+            html =
+              '<div class="form-group"><label>Nama Potensi</label><input type="text" id="inNama" value="' +
+              (item.nama || "") +
+              '" /></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi">' +
+              (item.deskripsi || "") +
+              '</textarea></div><div class="form-group"><label>Icon</label><input type="text" id="inIcon" value="' +
+              (item.icon || "fa-seedling") +
+              '" /></div>';
+            break;
+          case "strategi":
+            title = "Edit Strategi";
+            html =
+              '<div class="form-group"><label>Nama Strategi</label><input type="text" id="inNama" value="' +
+              (item.nama || "") +
+              '" /></div><div class="form-group"><label>Tipe</label><select id="inTipe"><option value="SO" ' +
+              (item.tipe === "SO" ? "selected" : "") +
+              '>SO</option><option value="WO" ' +
+              (item.tipe === "WO" ? "selected" : "") +
+              '>WO</option><option value="ST" ' +
+              (item.tipe === "ST" ? "selected" : "") +
+              '>ST</option><option value="WT" ' +
+              (item.tipe === "WT" ? "selected" : "") +
+              '>WT</option></select></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi">' +
+              (item.deskripsi || "") +
+              '</textarea></div><div class="form-group"><label>Sumber Dana</label><input type="text" id="inSumber" value="' +
+              (item.sumber_dana
+                ? Array.isArray(item.sumber_dana)
+                  ? item.sumber_dana.join(", ")
+                  : item.sumber_dana
+                : "") +
+              '" /></div>';
+            break;
+          case "program":
+            title = "Edit Program";
+            html =
+              '<div class="form-group"><label>Nama Program</label><input type="text" id="inNama" value="' +
+              (item.nama || "") +
+              '" /></div><div class="form-group"><label>Deskripsi</label><textarea id="inDeskripsi">' +
+              (item.deskripsi || "") +
+              '</textarea></div><div class="form-group"><label>Sumber Dana</label><input type="text" id="inSumber" value="' +
+              (item.sumber_dana || "") +
+              '" /></div><div class="form-group"><label>Status</label><select id="inStatus"><option value="Berjalan" ' +
+              (item.status === "Berjalan" ? "selected" : "") +
+              '>Berjalan</option><option value="Perencanaan" ' +
+              (item.status === "Perencanaan" ? "selected" : "") +
+              '>Perencanaan</option><option value="Selesai" ' +
+              (item.status === "Selesai" ? "selected" : "") +
+              ">Selesai</option></select></div>";
+            break;
+          default:
+            html = '<p style="color:red;">Jenis data tidak dikenal.</p>';
+        }
+        openModal(title, html);
+      }
+
+      function deleteData(type, id) {
+        showConfirm(
+          "Yakin ingin menghapus data ini?",
+          function (confirmed) {
+            if (!confirmed) return;
+
+            var key = "";
+            var data = [];
+
+            if (type == "Potensi" || type == "potensi") {
+              key = KEYS.potensi;
+              data = getData(key, DEFAULT_DATA.potensi);
+            } else if (type == "Strategi" || type == "strategi") {
+              key = KEYS.strategi;
+              data = getData(key, DEFAULT_DATA.strategi);
+            } else if (type == "Program" || type == "program") {
+              key = KEYS.program;
+              data = getData(key, DEFAULT_DATA.program);
+            } else if (type && type.includes("SWOT")) {
+              var swotData = CRUD.getLocalData("swot") || { faktor: {} };
+              var kategoriMap = {
+                "SWOT-kekuatan": "kekuatan",
+                "SWOT-kelemahan": "kelemahan",
+                "SWOT-peluang": "peluang",
+                "SWOT-ancaman": "ancaman",
+              };
+              var kategori = kategoriMap[type] || "kekuatan";
+              var list = swotData.faktor?.[kategori] || [];
+              var defaultIds = [
+                "S1",
+                "S2",
+                "S3",
+                "S4",
+                "S5",
+                "S6",
+                "S7",
+                "W1",
+                "W2",
+                "W3",
+                "W4",
+                "W5",
+                "W6",
+                "W7",
+                "O1",
+                "O2",
+                "O3",
+                "O4",
+                "O5",
+                "O6",
+                "O7",
+                "T1",
+                "T2",
+                "T3",
+                "T4",
+                "T5",
+                "T6",
+                "T7",
+              ];
+              var itemFound = list.find(function (d) {
+                return d.id == id;
+              });
+              if (itemFound && defaultIds.includes(itemFound.id)) {
+                showToast("Data default tidak dapat dihapus!", "warning");
+                return;
+              }
+              if (swotData.faktor) {
+                swotData.faktor[kategori] = list.filter(function (d) {
+                  return d.id != id;
+                });
+                CRUD.saveData("swot", swotData);
+                showToast("Data SWOT berhasil dihapus!", "success");
+                addActivity("Data SWOT dihapus", "warning", "fa-trash");
+                loadStats();
+                searchData();
+              }
+              return;
+            } else {
+              showToast("Jenis data tidak dikenal: " + type, "error");
+              return;
+            }
+
+            var item = data.find(function (d) {
+              return d.id == id;
+            });
+            if (item && item.isDefault) {
+              showToast("Data default tidak dapat dihapus!", "warning");
+              return;
+            }
+
+            var newData = data.filter(function (item) {
+              return item.id != id;
+            });
+            if (newData.length === data.length) {
+              showToast("Data tidak ditemukan!", "error");
+              return;
+            }
+
+            saveDataToStorage(key, newData);
+            showToast("Data berhasil dihapus!", "success");
+            addActivity("Data " + type + " dihapus", "warning", "fa-trash");
+            loadStats();
+            searchData();
+          },
+          "danger",
+          "Hapus Data",
+        );
+      }
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        var userData = localStorage.getItem("sipedes_user");
+        if (!userData) {
+          showToast("Silakan login terlebih dahulu", "warning");
+          setTimeout(function () {
+            window.location.href = "login.html";
+          }, 1000);
+          return;
+        }
+
+        var user = JSON.parse(userData);
+        if (user.role !== "perangkat") {
+          var pages = {
+            admin: "dashboard-admin.html",
+            kades: "dashboard-kades.html",
+          };
+          showToast("Redirect ke dashboard " + user.role, "info");
+          setTimeout(function () {
+            window.location.href = pages[user.role] || "index.html";
+          }, 500);
+          return;
+        }
+
+        document.getElementById("userAvatar").textContent = user.nama
+          .charAt(0)
+          .toUpperCase();
+        document.getElementById("userName").textContent = user.nama;
+
+        initDefaultData();
+        loadStats();
+        searchData();
+        loadChart();
+        loadActivity();
+
+        addActivity(
+          "Perangkat <strong>" + user.nama + "</strong> login",
+          "success",
+          "fa-user",
+        );
+        showToast("Selamat datang, " + user.nama + "!", "success", 3000);
+      });
+    </script>
+  </body>
+</html>
